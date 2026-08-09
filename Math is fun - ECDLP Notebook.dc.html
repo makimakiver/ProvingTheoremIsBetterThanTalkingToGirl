@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>
+body{margin:0;background:#e8e4da;font-family:Spectral,Georgia,serif}
+a{color:#5c6f5a}a:hover{color:#3f4d3e}
+.dv-turn{padding:44px 48px 36px;border-bottom:1px solid rgba(35,36,31,.09);scroll-margin-top:16px}
+.dv-thd{display:flex;align-items:baseline;gap:10px;margin:0 0 22px}
+.dv-tid{font:500 10px/1 'JetBrains Mono',monospace;padding:4px 7px;background:#23241f;color:#f4f1ea;border-radius:3px;text-decoration:none}
+.dv-tname{font:400 13px/1.2 Spectral,serif;color:#23241f;letter-spacing:.01em}
+.dv-opts{display:flex;flex-wrap:wrap;gap:30px;align-items:flex-start}
+.dv-opt{flex:none;display:flex;flex-direction:column;gap:10px;scroll-margin-top:16px}
+.dv-oid{font:500 10.5px/1 'JetBrains Mono',monospace;padding:3px 7px;background:rgba(35,36,31,.09);color:#23241f;border-radius:4px;text-decoration:none}
+.dv-olabel{display:flex;align-items:baseline;gap:9px;font:400 11.5px/1.3 'JetBrains Mono',monospace;color:rgba(35,36,31,.5)}
+.dv-card{max-width:100%;background:#f4f1ea;border:1px solid rgba(35,36,31,.12);border-radius:6px;box-shadow:0 2px 14px rgba(35,36,31,.07);overflow:hidden}
+.dv-opt:target .dv-oid{background:#5c6f5a;color:#f4f1ea}
+.dv-next{margin:24px 0 0;font:400 12.5px/1.6 Spectral,serif;color:rgba(35,36,31,.5)}
+@keyframes drift{0%{transform:translate3d(0,0,0)}50%{transform:translate3d(6px,-4px,0)}100%{transform:translate3d(0,0,0)}}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-1.5deg)}50%{transform:translateY(-10px) rotate(1.5deg)}}
+@keyframes haloPulse{0%,100%{box-shadow:0 0 0 1px rgba(90,200,232,.35), 0 0 30px rgba(90,200,232,.12)}50%{box-shadow:0 0 0 1px rgba(90,200,232,.6), 0 0 52px rgba(90,200,232,.3)}}
+@keyframes orbitSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* --- isolate view: show only section 5a --- */
+body{display:flex;align-items:center;justify-content:center;min-height:100vh}
+.dv-turn{display:none}
+.dv-turn#t5{display:block;padding:0;border-bottom:none}
+#t5 .dv-thd{display:none}
+#t5 .dv-opts{gap:0}
+.dv-opt{display:none}
+.dv-opt#5a{display:flex}
+#5a .dv-olabel{display:none}
+/* --- end isolate view --- */
+</style></helmet>
+
+<section class="dv-turn" id="t5">
+<div class="dv-thd"><a class="dv-tid" href="#t5">5</a><span class="dv-tname">The road — your character collection as milestones along the path</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="5a">
+<div class="dv-olabel"><a class="dv-oid" href="#5a">5a</a>The road — light/dark toggle, click the character</div>
+<div class="dv-card" style="width:1100px;background:#000;border-color:rgba(255,255,255,.12)">
+<div style="position:relative;height:760px;background:{{ t5.bg }};font-family:'Space Grotesk',system-ui,sans-serif;overflow:hidden;transition:background .4s">
+
+<div onClick="{{ toggleTheme }}" style="position:absolute;top:26px;right:28px;z-index:6;display:flex;align-items:center;gap:8px;padding:7px 12px;border:1px solid {{ t5.border }};border-radius:20px;cursor:pointer;background:{{ t5.chipBg }}" title="toggle light / dark">
+<span style="font:400 12px/1 'JetBrains Mono',monospace;color:{{ t5.sub }}">{{ themeIcon }}</span>
+<span style="font:400 10.5px/1 'JetBrains Mono',monospace;letter-spacing:.1em;color:{{ t5.sub }}">{{ themeLabel }}</span>
+</div>
+
+<svg viewBox="0 0 1100 760" style="position:absolute;inset:0;width:100%;height:100%">
+<path d="M550 60 C 550 160, 300 220, 335 380 C 370 540, 550 600, 550 720" fill="none" stroke="{{ t5.road }}" stroke-width="2" stroke-dasharray="1 14" stroke-linecap="round"></path>
+</svg>
+
+<div style="position:absolute;z-index:6;left:{{ chLeft }};top:{{ chTop }};width:{{ chSize }};height:{{ chSize }};transition:left .65s cubic-bezier(.4,0,.2,1), top .65s cubic-bezier(.4,0,.2,1), width .65s cubic-bezier(.4,0,.2,1), height .65s cubic-bezier(.4,0,.2,1);animation:bob 5s ease-in-out infinite;pointer-events:none">
+<img src="./assets/sticker-shor.png" alt="Shor checkpoint character" style="width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 28px rgba(90,200,232,.25));pointer-events:none;transition:transform .3s ease;transform:{{ hoverScale }}">
+<div onClick="{{ openCheckpoint }}" onMouseEnter="{{ hoverOn }}" onMouseLeave="{{ hoverOff }}" title="view summary + PDF" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:64%;height:64%;border-radius:50%;pointer-events:auto;cursor:pointer"></div>
+</div>
+
+<sc-if value="{{ showCheckpoint }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ closeCheckpoint }}" style="position:absolute;inset:0;z-index:5;background:{{ t5.bg }};display:grid;grid-template-columns:1fr 420px;opacity:{{ ovOpacity }};pointer-events:{{ ovPE }};transition:opacity .45s ease .1s">
+<div style="position:relative">
+<span onClick="{{ closeCheckpoint }}" style="position:absolute;top:24px;left:28px;font:400 13px/1 'JetBrains Mono',monospace;color:{{ t5.sub }};cursor:pointer;display:flex;align-items:center;gap:8px" style-hover="opacity:.7">← the road</span>
+<div onClick="{{ stopClick }}" style="position:absolute;bottom:26px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px">
+<span style="font:300 12px/1 'JetBrains Mono',monospace;color:{{ t5.sub }};opacity:{{ soonOpacity }};transition:opacity .35s">coming soon…</span>
+<div style="display:flex;gap:2px;border:1px solid {{ t5.border }};border-radius:20px;overflow:hidden">
+<span style="padding:9px 18px;font:400 13px/1 'JetBrains Mono',monospace;color:{{ t5.disabled }};cursor:not-allowed;background:{{ t5.disabledBg }}" title="this is the first checkpoint">‹</span>
+<span onClick="{{ nextCheckpoint }}" style="padding:9px 18px;font:400 13px/1 'JetBrains Mono',monospace;color:{{ t5.ink }};cursor:pointer" style-hover="background:rgba(90,200,232,.12);color:#5AC8E8">›</span>
+</div>
+</div>
+</div>
+<div onClick="{{ stopClick }}" style="background:{{ t5.panel }};padding:52px 44px 36px;display:flex;flex-direction:column;gap:0;min-height:0;overflow-y:auto">
+<sc-if value="{{ showSpecs }}" hint-placeholder-val="{{ true }}">
+<h2 style="margin:0 0 22px;font:500 32px/1.15 'Space Grotesk',sans-serif;letter-spacing:-.01em;color:{{ t5.ink }}">Shor's Algorithm in Qiskit</h2>
+<p style="margin:0 0 40px;font:300 15.5px/1.75 Spectral,serif;color:{{ t5.body }};text-wrap:pretty">From controlled modular exponentiation to IQFT cancellation and measurement: factoring 15 becomes finding the order of 2, and everything except y ∈ {0, 64, 128, 192} cancels — so r = 4 and 15 = 3 × 5.</p>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-top:1px solid {{ t5.hairline }}"><span style="font:400 13px/1 'Space Grotesk',sans-serif;color:{{ t5.faint }}">Format</span><span style="font:400 13px/1 'Space Grotesk',sans-serif;color:{{ t5.ink }}">PDF · 23 pages</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-top:1px solid {{ t5.hairline }}"><span style="font:400 13px/1 'Space Grotesk',sans-serif;color:{{ t5.faint }}">Thread</span><span style="font:400 13px/1 'Space Grotesk',sans-serif;color:{{ t5.ink }}">Order finding · Shor</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-top:1px solid {{ t5.hairline }}"><span style="font:400 13px/1 'Space Grotesk',sans-serif;color:{{ t5.faint }}">Instance</span><span style="font:400 13px/1 'JetBrains Mono',monospace;color:{{ t5.ink }}">N = 15, a = 2</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-top:1px solid {{ t5.hairline }}"><span style="font:400 13px/1 'Space Grotesk',sans-serif;color:{{ t5.faint }}">Peaks</span><span style="font:400 13px/1 'JetBrains Mono',monospace;color:{{ t5.ink }}">0 · 64 · 128 · 192</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-top:1px solid {{ t5.hairline }}"><span style="font:400 13px/1 'Space Grotesk',sans-serif;color:{{ t5.faint }}">Result</span><span style="font:400 13px/1 'JetBrains Mono',monospace;color:{{ t5.accent }}">r = 4 → 15 = 3 × 5</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:15px 0;border-top:1px solid {{ t5.hairline }};border-bottom:1px solid {{ t5.hairline }}"><span style="font:400 13px/1 'Space Grotesk',sans-serif;color:{{ t5.faint }}">Status</span><span style="font:400 13px/1 'Space Grotesk',sans-serif;color:{{ t5.ink }}">Checked on hardware</span></div>
+<div style="margin-top:auto;padding-top:36px;display:flex;align-items:center;gap:14px">
+<button onClick="{{ openPdfView }}" style="border:none;border-radius:6px;padding:12px 20px;background:#5AC8E8;font:600 13px/1 'Space Grotesk',sans-serif;color:#02121C;cursor:pointer" style-hover="background:#7CD8F2">Read the PDF</button>
+<a href="./uploads/assets-1786279591086-oznq.pdf" target="_blank" style="font:400 11.5px/1 'JetBrains Mono',monospace;color:{{ t5.sub }};text-decoration:none" style-hover="opacity:.7">open in new tab ↗</a>
+</div>
+</sc-if>
+<sc-if value="{{ showPdfView }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;justify-content:space-between;align-items:center;margin:0 0 18px">
+<span style="font:400 11px/1 'JetBrains Mono',monospace;letter-spacing:.12em;color:{{ t5.faint }}">THE PDF · 23 PAGES</span>
+<span onClick="{{ closePdfView }}" style="font:400 12px/1 'JetBrains Mono',monospace;color:{{ t5.accent }};cursor:pointer" style-hover="opacity:.7">← details</span>
+</div>
+<sc-if value="{{ pdfLoading }}" hint-placeholder-val="{{ false }}"><span style="font:400 11.5px/1 'JetBrains Mono',monospace;color:{{ t5.faint }};padding:8px 0 14px">rendering PDF… {{ pdfDone }}/23</span></sc-if>
+<div style="display:flex;flex-direction:column;gap:14px">{{ pdfPageImgs }}</div>
+</sc-if>
+</div>
+</div>
+</sc-if>
+
+<div style="position:absolute;top:34px;left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:8px">
+<div style="display:flex;align-items:center;gap:10px">
+<svg viewBox="0 0 26 26" width="18" height="18" style="opacity:.6"><circle cx="13" cy="13" r="11" fill="none" stroke="{{ t5.ink }}" stroke-width="1.2"></circle><path d="M4 17 Q13 2 22 9" fill="none" stroke="{{ t5.ink }}" stroke-width="1.2"></path></svg>
+<span style="font:400 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;color:{{ t5.sub }}">MATH IS FUN — THE ROAD</span>
+</div>
+<span style="font:300 12.5px/1 Spectral,serif;font-style:italic;color:{{ t5.faint }}">one character per theorem survived</span>
+</div>
+
+<div style="position:absolute;top:300px;left:432px;display:flex;align-items:center;gap:22px">
+<div style="display:flex;flex-direction:column;gap:6px">
+<span style="font:500 16px/1.2 'Space Grotesk',sans-serif;color:{{ t5.ink }}">Shor's Algorithm in Qiskit</span>
+<span style="font:400 11px/1 'JetBrains Mono',monospace;color:{{ t5.accent }}">checkpoint 01 · PDF · 8 Aug</span>
+<span style="font:300 13px/1.5 Spectral,serif;font-style:italic;color:{{ t5.faint }}">from modular exponentiation to IQFT cancellation</span>
+</div>
+</div>
+
+<div style="position:absolute;top:620px;left:470px;display:flex;align-items:center;gap:22px">
+<div style="width:96px;height:96px;flex:none;border-radius:50%;border:1px dashed {{ t5.border }};display:flex;align-items:center;justify-content:center"><span style="font:400 10px/1 'JetBrains Mono',monospace;color:{{ t5.faint }}">next</span></div>
+<div style="display:flex;flex-direction:column;gap:5px">
+<span style="font:500 14px/1.2 'Space Grotesk',sans-serif;color:{{ t5.sub }}">next checkpoint</span>
+<span style="font:400 11px/1 'JetBrains Mono',monospace;color:{{ t5.faint }}">upload a PDF to unlock</span>
+</div>
+</div>
+
+</div>
+</div>
+</div>
+
+</div>
+<p class="dv-next">Try next: “more milestones” · “merge the road into <a class="dv-oid" href="#4a">4a</a> as the homepage” · “click a character → its post”</p>
+</section>
+
+<section class="dv-turn" id="t4">
+<div class="dv-thd"><a class="dv-tid" href="#t4">4</a><span class="dv-tname">Ultra-reduced — black screen, a handful of tiles, nothing else (avara.xyz register)</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="4a">
+<div class="dv-olabel"><a class="dv-oid" href="#4a">4a</a>Index ↔ post (click a tile)</div>
+<div class="dv-card" style="width:1100px;background:#000;border-color:rgba(255,255,255,.12)">
+<div style="min-height:760px;background:#000;font-family:'Space Grotesk',system-ui,sans-serif;display:flex;flex-direction:column">
+
+<sc-if value="{{ showIndex4 }}" hint-placeholder-val="{{ true }}">
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:56px;padding:80px 40px">
+<div style="display:flex;flex-direction:column;gap:26px">
+<sc-for list="{{ posts4 }}" as="p" hint-placeholder-count="5">
+<div onClick="{{ p.open }}" style="display:flex;align-items:center;gap:20px;cursor:pointer;opacity:.92" style-hover="opacity:1">
+<div style="width:56px;height:56px;border-radius:14px;background:#0C0C0C;border:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center" style-hover="border-color:rgba(255,255,255,.18)"><svg viewBox="0 0 44 30" width="36" height="25"><path d="{{ curveRow }}" fill="none" stroke="{{ p.tint }}" stroke-width="1.1"></path></svg></div>
+<div style="display:flex;flex-direction:column;gap:4px">
+<span style="font:500 15px/1.2 'Space Grotesk',sans-serif;color:#fff">{{ p.short }}</span>
+<span style="font:400 11.5px/1 'JetBrains Mono',monospace;color:rgba(255,255,255,.32)">{{ p.date }}</span>
+</div>
+</div>
+</sc-for>
+</div>
+</div>
+<footer style="display:flex;align-items:center;justify-content:center;gap:12px;padding:0 0 34px">
+<svg viewBox="0 0 26 26" width="16" height="16" style="opacity:.5"><circle cx="13" cy="13" r="11" fill="none" stroke="#fff" stroke-width="1.2"></circle><path d="M4 17 Q13 2 22 9" fill="none" stroke="#fff" stroke-width="1.2"></path></svg>
+<span style="font:400 11px/1 'JetBrains Mono',monospace;letter-spacing:.14em;color:rgba(255,255,255,.4)">MATH IS FUN — ELLIPTIC &amp; QUANTUM DISCRETE LOGS</span>
+</footer>
+</sc-if>
+
+<sc-if value="{{ showPost4 }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;padding:72px 40px 64px">
+<article style="width:100%;max-width:600px;display:flex;flex-direction:column;gap:24px">
+<span onClick="{{ goBack4 }}" style="align-self:flex-start;font:400 12px/1 'JetBrains Mono',monospace;color:rgba(255,255,255,.4);cursor:pointer" style-hover="color:#fff">← index</span>
+<div style="display:flex;flex-direction:column;gap:10px">
+<h1 style="margin:0;font:300 30px/1.3 Spectral,serif;color:#fff">{{ post4.title }}</h1>
+<span style="font:400 11.5px/1 'JetBrains Mono',monospace;color:rgba(255,255,255,.32)">{{ post4.date }} · {{ post4.read }}</span>
+</div>
+<p style="margin:0;font:300 16.5px/1.9 Spectral,serif;color:rgba(255,255,255,.78);text-wrap:pretty">After the controlled modular exponentiation, the counting register holds every exponent <em>x</em> at once, entangled with <em>a<sup>x</sup></em> mod <em>N</em>. Ignore the work register: what remains is supported on an arithmetic progression of spacing <em>r</em>.</p>
+<div style="padding:20px 0;border-top:1px solid rgba(255,255,255,.12);border-bottom:1px solid rgba(255,255,255,.12);font:300 16px/1.9 Spectral,serif;color:#fff;text-align:center">|ψ⟩ ∝ Σ<sub>j</sub> |x₀ + jr⟩ &nbsp;⟶&nbsp; peaks at y ≈ kQ/r</div>
+<p style="margin:0;font:300 16.5px/1.9 Spectral,serif;color:rgba(255,255,255,.78);text-wrap:pretty">The inverse QFT does not <em>find</em> the period. It arranges for every y far from a multiple of Q/r to destructively cancel. With Q = 256, r = 4: peaks at y ∈ {0, 64, 128, 192}, and the continued-fraction step stays idle.</p>
+<p style="margin:0;font:300 16.5px/1.9 Spectral,serif;color:rgba(255,255,255,.78);text-wrap:pretty">On E(𝔽<sub>p</sub>) the analogue is [x]P and the period is the order of P. Same circuit, different group — the cost moves entirely into the point addition.</p>
+</article>
+</div>
+</sc-if>
+
+</div>
+</div>
+</div>
+
+</div>
+<p class="dv-next">Try next: “make <a class="dv-oid" href="#4a">4a</a> the whole site” · “add a one-line about section” · “hover glow on tiles”</p>
+</section>
+
+<section class="dv-turn" id="t3">
+<div class="dv-thd"><a class="dv-tid" href="#t3">3</a><span class="dv-tname">Blog — a list of posts; click one to read. Interactive.</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="3a">
+<div class="dv-olabel"><a class="dv-oid" href="#3a">3a</a>Index ↔ post (click rows, ← back)</div>
+<div class="dv-card" style="width:880px;background:#020A19;border-color:rgba(255,255,255,.1)">
+<div style="min-height:760px;background:#020A19;font-family:'Space Grotesk',system-ui,sans-serif;display:flex;flex-direction:column;padding:0 0 56px">
+
+<header style="display:flex;align-items:center;justify-content:space-between;padding:26px 64px 0">
+<div style="display:flex;align-items:center;gap:9px">
+<svg viewBox="0 0 26 26" width="20" height="20"><circle cx="13" cy="13" r="11" fill="none" stroke="#5AC8E8" stroke-width="1.2"></circle><path d="M4 17 Q13 2 22 9" fill="none" stroke="#5AC8E8" stroke-width="1.2"></path><circle cx="13" cy="13" r="2" fill="#5AC8E8"></circle></svg>
+<span style="font:600 14px/1 'Space Grotesk',sans-serif;letter-spacing:.1em;color:#E6EDF7">MATH IS FUN</span>
+</div>
+<span style="font:400 12px/1 'JetBrains Mono',monospace;color:#4C5D75">notes on elliptic &amp; quantum discrete logs</span>
+</header>
+
+<sc-if value="{{ showIndex }}" hint-placeholder-val="{{ true }}">
+<main style="padding:64px 64px 0;display:flex;flex-direction:column;gap:44px">
+<h1 style="margin:0;font:300 30px/1.2 Spectral,serif;color:#E6EDF7">Writing</h1>
+<div style="display:flex;flex-direction:column">
+<sc-for list="{{ posts }}" as="p" hint-placeholder-count="5">
+<div onClick="{{ p.open }}" style="display:flex;align-items:baseline;justify-content:space-between;gap:32px;padding:22px 0;border-top:1px solid rgba(255,255,255,.08);cursor:pointer" style-hover="background:rgba(90,200,232,.04)">
+<span style="font:400 18px/1.4 Spectral,serif;color:#E6EDF7">{{ p.title }}</span>
+<span style="flex:none;font:400 12px/1 'JetBrains Mono',monospace;color:#4C5D75">{{ p.date }}</span>
+</div>
+</sc-for>
+<div style="border-top:1px solid rgba(255,255,255,.08)"></div>
+</div>
+</main>
+</sc-if>
+
+<sc-if value="{{ showPost }}" hint-placeholder-val="{{ false }}">
+<main style="padding:56px 64px 0;display:flex;flex-direction:column;align-items:center">
+<article style="width:100%;max-width:620px;display:flex;flex-direction:column;gap:24px">
+<span onClick="{{ goBack }}" style="align-self:flex-start;font:400 12.5px/1 'JetBrains Mono',monospace;color:#5AC8E8;cursor:pointer" style-hover="color:#7CD8F2">← all posts</span>
+<div style="display:flex;flex-direction:column;gap:10px">
+<h1 style="margin:0;font:300 32px/1.25 Spectral,serif;color:#E6EDF7">{{ post.title }}</h1>
+<span style="font:400 12px/1 'JetBrains Mono',monospace;color:#4C5D75">{{ post.date }} · {{ post.read }}</span>
+</div>
+<p style="margin:0;font:300 17px/1.85 Spectral,serif;color:rgba(230,237,247,.82);text-wrap:pretty">After the controlled modular exponentiation, the counting register holds every exponent <em>x</em> at once, entangled with <em>a<sup>x</sup></em> mod <em>N</em>. Ignore the work register: what remains is supported on an arithmetic progression of spacing <em>r</em>.</p>
+<div style="padding:22px 0;border-top:1px solid rgba(255,255,255,.1);border-bottom:1px solid rgba(255,255,255,.1);font:300 16.5px/1.9 Spectral,serif;color:#5AC8E8;text-align:center">|ψ⟩ ∝ Σ<sub>j</sub> |x₀ + jr⟩ &nbsp;⟶&nbsp; peaks at y ≈ kQ/r</div>
+<p style="margin:0;font:300 17px/1.85 Spectral,serif;color:rgba(230,237,247,.82);text-wrap:pretty">The inverse QFT does not <em>find</em> the period. It arranges for every y far from a multiple of Q/r to destructively cancel, and lets what remains be read. With Q = 256 and r = 4 the spacing is exact — peaks at y ∈ {0, 64, 128, 192} — so the continued-fraction step stays idle.</p>
+<p style="margin:0;font:300 17px/1.85 Spectral,serif;color:rgba(230,237,247,.82);text-wrap:pretty">On E(𝔽<sub>p</sub>) the analogue is [x]P and the period is the order of P. Same circuit, different group — the cost moves entirely into the point addition.</p>
+<svg viewBox="0 0 120 46" width="120" height="46" style="opacity:.5;margin-top:8px"><path d="{{ curveDusk }}" fill="none" stroke="#5AC8E8" stroke-width=".9"></path></svg>
+</article>
+</main>
+</sc-if>
+
+</div>
+</div>
+</div>
+
+</div>
+<p class="dv-next">Try next: “paper-toned version” · “add tags or a one-line summary per post” · “make this the whole site — kill turns 1–2”</p>
+</section>
+
+<section class="dv-turn" id="t2" style="background:#e8e4da">
+<div class="dv-thd"><a class="dv-tid" href="#t2">2</a><span class="dv-tname">Product register — dark app shell, stat strip, dense rows (Suilend-flavoured)</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="2a">
+<div class="dv-olabel"><a class="dv-oid" href="#2a">2a</a>Library — app shell</div>
+<div class="dv-card" style="width:1280px;background:#020A19;border-color:rgba(255,255,255,.1)">
+<div style="min-height:812px;background:#020A19;font-family:'Space Grotesk',system-ui,sans-serif;display:flex;flex-direction:column">
+
+<header style="display:flex;align-items:center;gap:28px;padding:0 24px;height:60px;border-bottom:1px solid rgba(255,255,255,.07);background:#040D1E">
+<div style="display:flex;align-items:center;gap:9px">
+<svg viewBox="0 0 26 26" width="22" height="22"><circle cx="13" cy="13" r="11" fill="none" stroke="#5AC8E8" stroke-width="1.2"></circle><path d="M4 17 Q13 2 22 9" fill="none" stroke="#5AC8E8" stroke-width="1.2"></path><circle cx="13" cy="13" r="2" fill="#5AC8E8"></circle></svg>
+<span style="font:600 15px/1 'Space Grotesk',sans-serif;letter-spacing:.1em;color:#E6EDF7">MATH IS FUN</span>
+</div>
+<nav style="display:flex;align-items:center;gap:4px">
+<span style="padding:7px 12px;border-radius:5px;background:rgba(90,200,232,.12);font:500 13px/1 'Space Grotesk',sans-serif;color:#5AC8E8">Library</span>
+<span style="padding:7px 12px;border-radius:5px;font:400 13px/1 'Space Grotesk',sans-serif;color:#8496AE">Threads</span>
+<span style="padding:7px 12px;border-radius:5px;font:400 13px/1 'Space Grotesk',sans-serif;color:#8496AE">Derivations</span>
+<span style="padding:7px 12px;border-radius:5px;font:400 13px/1 'Space Grotesk',sans-serif;color:#8496AE">Map</span>
+</nav>
+<div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+<div style="display:flex;align-items:center;gap:8px;padding:7px 12px;border:1px solid rgba(255,255,255,.09);border-radius:5px;background:#020A19;width:230px"><span style="font:400 12px/1 'JetBrains Mono',monospace;color:#4C5D75">⌕</span><span style="font:400 12.5px/1 'Space Grotesk',sans-serif;color:#4C5D75">search papers, notation…</span></div>
+<span style="padding:7px 10px;border:1px solid rgba(255,255,255,.09);border-radius:5px;font:400 12px/1 'JetBrains Mono',monospace;color:#8496AE">⚙</span>
+<button style="border:none;border-radius:5px;padding:8px 15px;background:#5AC8E8;font:600 12.5px/1 'Space Grotesk',sans-serif;color:#02121C;cursor:pointer" style-hover="background:#7CD8F2">Import PDF</button>
+</div>
+</header>
+
+<div style="display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid rgba(255,255,255,.07);background:#040D1E">
+<div style="padding:20px 24px;border-right:1px solid rgba(255,255,255,.05);display:flex;flex-direction:column;gap:7px"><span style="font:400 10.5px/1 'JetBrains Mono',monospace;letter-spacing:.1em;color:#6B7E97">PAPERS</span><span style="font:500 26px/1 'JetBrains Mono',monospace;color:#E6EDF7">24</span></div>
+<div style="padding:20px 24px;border-right:1px solid rgba(255,255,255,.05);display:flex;flex-direction:column;gap:7px"><span style="font:400 10.5px/1 'JetBrains Mono',monospace;letter-spacing:.1em;color:#6B7E97">PAGES READ</span><span style="font:500 26px/1 'JetBrains Mono',monospace;color:#E6EDF7">1,284<span style="font-size:14px;color:#4C5D75"> / 3,910</span></span></div>
+<div style="padding:20px 24px;border-right:1px solid rgba(255,255,255,.05);display:flex;flex-direction:column;gap:7px"><span style="font:400 10.5px/1 'JetBrains Mono',monospace;letter-spacing:.1em;color:#6B7E97">MARGIN NOTES</span><span style="font:500 26px/1 'JetBrains Mono',monospace;color:#E6EDF7">187</span></div>
+<div style="padding:20px 24px;display:flex;flex-direction:column;gap:7px"><span style="font:400 10.5px/1 'JetBrains Mono',monospace;letter-spacing:.1em;color:#6B7E97">OPEN QUESTIONS</span><span style="font:500 26px/1 'JetBrains Mono',monospace;color:#A98BFF">6</span></div>
+</div>
+
+<div style="padding:24px;display:flex;flex-direction:column;gap:20px;flex:1">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<div style="display:flex;align-items:center;gap:6px">
+<span style="padding:6px 12px;border-radius:20px;background:rgba(255,255,255,.07);font:500 12px/1 'Space Grotesk',sans-serif;color:#E6EDF7">All</span>
+<span style="padding:6px 12px;border-radius:20px;font:400 12px/1 'Space Grotesk',sans-serif;color:#8496AE">Reading</span>
+<span style="padding:6px 12px;border-radius:20px;font:400 12px/1 'Space Grotesk',sans-serif;color:#8496AE">Annotated</span>
+<span style="padding:6px 12px;border-radius:20px;font:400 12px/1 'Space Grotesk',sans-serif;color:#8496AE">Mine</span>
+<span style="padding:6px 12px;border-radius:20px;font:400 12px/1 'Space Grotesk',sans-serif;color:#8496AE">Untouched</span>
+</div>
+<span style="font:400 11.5px/1 'JetBrains Mono',monospace;color:#4C5D75">sorted by last opened ↓</span>
+</div>
+
+<div style="border:1px solid rgba(255,255,255,.08);border-radius:8px;overflow:hidden;background:#040D1E">
+<div style="display:grid;grid-template-columns:1.9fr 1fr 150px 80px 96px 92px;gap:16px;padding:12px 20px;border-bottom:1px solid rgba(255,255,255,.07);font:400 10.5px/1 'JetBrains Mono',monospace;letter-spacing:.09em;color:#6B7E97"><span>PAPER</span><span>THREAD</span><span>PROGRESS</span><span style="text-align:right">NOTES</span><span style="text-align:right">ADDED</span><span style="text-align:right">STATUS</span></div>
+
+<div style="display:grid;grid-template-columns:1.9fr 1fr 150px 80px 96px 92px;gap:16px;padding:16px 20px;align-items:center;border-bottom:1px solid rgba(255,255,255,.05);background:rgba(90,200,232,.05)">
+<div style="display:flex;align-items:center;gap:12px"><svg viewBox="0 0 44 30" width="40" height="28" style="flex:none;opacity:.85"><path d="{{ curveRow }}" fill="none" stroke="#5AC8E8" stroke-width=".9"></path></svg><div style="display:flex;flex-direction:column;gap:4px"><span style="font:400 14.5px/1.3 Spectral,serif;color:#E6EDF7">Shor's Algorithm in Qiskit — IQFT cancellation</span><span style="font:400 11px/1 'JetBrains Mono',monospace;color:#4C5D75">yours · 23 pp · N=15, a=2, r=4</span></div></div>
+<div style="display:flex;align-items:center;gap:7px"><span style="width:6px;height:6px;border-radius:50%;background:#5AC8E8"></span><span style="font:400 12.5px/1 'Space Grotesk',sans-serif;color:#8496AE">Order finding</span></div>
+<div style="display:flex;flex-direction:column;gap:6px"><div style="height:3px;border-radius:2px;background:rgba(255,255,255,.09)"><div style="width:76%;height:3px;border-radius:2px;background:#5AC8E8"></div></div><span style="font:400 11px/1 'JetBrains Mono',monospace;color:#8496AE">76%</span></div>
+<span style="font:400 13px/1 'JetBrains Mono',monospace;color:#E6EDF7;text-align:right">14</span>
+<span style="font:400 12px/1 'JetBrains Mono',monospace;color:#6B7E97;text-align:right">8 Aug</span>
+<span style="justify-self:end;padding:4px 9px;border-radius:4px;background:rgba(90,200,232,.14);font:500 11px/1 'JetBrains Mono',monospace;color:#5AC8E8">reading</span>
+</div>
+
+<div style="display:grid;grid-template-columns:1.9fr 1fr 150px 80px 96px 92px;gap:16px;padding:16px 20px;align-items:center;border-bottom:1px solid rgba(255,255,255,.05)">
+<div style="display:flex;align-items:center;gap:12px"><svg viewBox="0 0 44 30" width="40" height="28" style="flex:none;opacity:.6"><path d="{{ curveRow }}" fill="none" stroke="#8496AE" stroke-width=".9"></path></svg><div style="display:flex;flex-direction:column;gap:4px"><span style="font:400 14.5px/1.3 Spectral,serif;color:#E6EDF7">The discrete logarithm on E(𝔽<sub>p</sub>)</span><span style="font:400 11px/1 'JetBrains Mono',monospace;color:#4C5D75">Galbraith &amp; Gaudry · 41 pp</span></div></div>
+<div style="display:flex;align-items:center;gap:7px"><span style="width:6px;height:6px;border-radius:50%;background:#A98BFF"></span><span style="font:400 12.5px/1 'Space Grotesk',sans-serif;color:#8496AE">ECDLP over 𝔽<sub>p</sub></span></div>
+<div style="display:flex;flex-direction:column;gap:6px"><div style="height:3px;border-radius:2px;background:rgba(255,255,255,.09)"><div style="width:34%;height:3px;border-radius:2px;background:#A98BFF"></div></div><span style="font:400 11px/1 'JetBrains Mono',monospace;color:#8496AE">34%</span></div>
+<span style="font:400 13px/1 'JetBrains Mono',monospace;color:#E6EDF7;text-align:right">6</span>
+<span style="font:400 12px/1 'JetBrains Mono',monospace;color:#6B7E97;text-align:right">2 Aug</span>
+<span style="justify-self:end;padding:4px 9px;border-radius:4px;background:rgba(255,255,255,.06);font:500 11px/1 'JetBrains Mono',monospace;color:#8496AE">reading</span>
+</div>
+
+<div style="display:grid;grid-template-columns:1.9fr 1fr 150px 80px 96px 92px;gap:16px;padding:16px 20px;align-items:center;border-bottom:1px solid rgba(255,255,255,.05)">
+<div style="display:flex;align-items:center;gap:12px"><svg viewBox="0 0 44 30" width="40" height="28" style="flex:none;opacity:.6"><path d="{{ curveRow }}" fill="none" stroke="#8496AE" stroke-width=".9"></path></svg><div style="display:flex;flex-direction:column;gap:4px"><span style="font:400 14.5px/1.3 Spectral,serif;color:#E6EDF7">Quantum order finding for elliptic-curve groups</span><span style="font:400 11px/1 'JetBrains Mono',monospace;color:#4C5D75">Proos–Zalka, annotated · 18 pp</span></div></div>
+<div style="display:flex;align-items:center;gap:7px"><span style="width:6px;height:6px;border-radius:50%;background:#5AC8E8"></span><span style="font:400 12.5px/1 'Space Grotesk',sans-serif;color:#8496AE">Order finding</span></div>
+<div style="display:flex;flex-direction:column;gap:6px"><div style="height:3px;border-radius:2px;background:rgba(255,255,255,.09)"><div style="width:100%;height:3px;border-radius:2px;background:rgba(255,255,255,.28)"></div></div><span style="font:400 11px/1 'JetBrains Mono',monospace;color:#8496AE">100%</span></div>
+<span style="font:400 13px/1 'JetBrains Mono',monospace;color:#E6EDF7;text-align:right">22</span>
+<span style="font:400 12px/1 'JetBrains Mono',monospace;color:#6B7E97;text-align:right">29 Jul</span>
+<span style="justify-self:end;padding:4px 9px;border-radius:4px;background:rgba(255,255,255,.06);font:500 11px/1 'JetBrains Mono',monospace;color:#6B7E97">finished</span>
+</div>
+
+<div style="display:grid;grid-template-columns:1.9fr 1fr 150px 80px 96px 92px;gap:16px;padding:16px 20px;align-items:center;border-bottom:1px solid rgba(255,255,255,.05)">
+<div style="display:flex;align-items:center;gap:12px"><svg viewBox="0 0 44 30" width="40" height="28" style="flex:none;opacity:.35"><path d="{{ curveRow }}" fill="none" stroke="#8496AE" stroke-width=".9"></path></svg><div style="display:flex;flex-direction:column;gap:4px"><span style="font:400 14.5px/1.3 Spectral,serif;color:#B7C4D4">Pollard's ρ with distinguished points</span><span style="font:400 11px/1 'JetBrains Mono',monospace;color:#4C5D75">van Oorschot–Wiener · 28 pp</span></div></div>
+<div style="display:flex;align-items:center;gap:7px"><span style="width:6px;height:6px;border-radius:50%;background:#4C5D75"></span><span style="font:400 12.5px/1 'Space Grotesk',sans-serif;color:#6B7E97">Pollard ρ</span></div>
+<div style="display:flex;flex-direction:column;gap:6px"><div style="height:3px;border-radius:2px;background:rgba(255,255,255,.09)"></div><span style="font:400 11px/1 'JetBrains Mono',monospace;color:#4C5D75">—</span></div>
+<span style="font:400 13px/1 'JetBrains Mono',monospace;color:#4C5D75;text-align:right">0</span>
+<span style="font:400 12px/1 'JetBrains Mono',monospace;color:#6B7E97;text-align:right">21 Jul</span>
+<span style="justify-self:end;padding:4px 9px;border-radius:4px;border:1px solid rgba(255,255,255,.08);font:500 11px/1 'JetBrains Mono',monospace;color:#4C5D75">new</span>
+</div>
+
+<div style="display:grid;grid-template-columns:1.9fr 1fr 150px 80px 96px 92px;gap:16px;padding:16px 20px;align-items:center">
+<div style="display:flex;align-items:center;gap:12px"><svg viewBox="0 0 44 30" width="40" height="28" style="flex:none;opacity:.35"><path d="{{ curveRow }}" fill="none" stroke="#8496AE" stroke-width=".9"></path></svg><div style="display:flex;flex-direction:column;gap:4px"><span style="font:400 14.5px/1.3 Spectral,serif;color:#B7C4D4">Baby-step giant-step, and the memory you cannot afford</span><span style="font:400 11px/1 'JetBrains Mono',monospace;color:#4C5D75">seminar notes · 11 pp</span></div></div>
+<div style="display:flex;align-items:center;gap:7px"><span style="width:6px;height:6px;border-radius:50%;background:#A98BFF"></span><span style="font:400 12.5px/1 'Space Grotesk',sans-serif;color:#6B7E97">ECDLP over 𝔽<sub>p</sub></span></div>
+<div style="display:flex;flex-direction:column;gap:6px"><div style="height:3px;border-radius:2px;background:rgba(255,255,255,.09)"><div style="width:12%;height:3px;border-radius:2px;background:rgba(255,255,255,.28)"></div></div><span style="font:400 11px/1 'JetBrains Mono',monospace;color:#8496AE">12%</span></div>
+<span style="font:400 13px/1 'JetBrains Mono',monospace;color:#E6EDF7;text-align:right">1</span>
+<span style="font:400 12px/1 'JetBrains Mono',monospace;color:#6B7E97;text-align:right">14 Jul</span>
+<span style="justify-self:end;padding:4px 9px;border-radius:4px;background:rgba(255,255,255,.06);font:500 11px/1 'JetBrains Mono',monospace;color:#8496AE">reading</span>
+</div>
+</div>
+
+<div style="display:grid;grid-template-columns:1.4fr 1fr;gap:16px">
+<div style="border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#040D1E;padding:20px;display:flex;flex-direction:column;gap:12px">
+<span style="font:400 10.5px/1 'JetBrains Mono',monospace;letter-spacing:.1em;color:#6B7E97">RESUME</span>
+<span style="font:400 17px/1.3 Spectral,serif;color:#E6EDF7">§2.9 — Where cancellation actually happens</span>
+<span style="font:300 14px/1.65 Spectral,serif;font-style:italic;color:#8496AE">The IQFT does not find the period. It arranges for every non-multiple of Q/r to cancel, and lets what remains be read.</span>
+<div style="margin-top:4px;display:flex;align-items:center;gap:14px"><button style="border:none;border-radius:5px;padding:8px 15px;background:rgba(90,200,232,.14);font:500 12px/1 'Space Grotesk',sans-serif;color:#5AC8E8;cursor:pointer">Continue reading</button><span style="font:400 11.5px/1 'JetBrains Mono',monospace;color:#4C5D75">peaks at y = 0, 64, 128, 192 → r = 4</span></div>
+</div>
+<div style="border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#040D1E;padding:20px;display:flex;flex-direction:column;gap:14px">
+<span style="font:400 10.5px/1 'JetBrains Mono',monospace;letter-spacing:.1em;color:#6B7E97">THREAD PROGRESS</span>
+<div style="display:flex;flex-direction:column;gap:11px">
+<div style="display:flex;align-items:center;gap:12px"><span style="flex:none;width:150px;font:400 12.5px/1 'Space Grotesk',sans-serif;color:#B7C4D4">Order finding · Shor</span><div style="flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.09)"><div style="width:82%;height:3px;border-radius:2px;background:#5AC8E8"></div></div><span style="font:400 11px/1 'JetBrains Mono',monospace;color:#8496AE">82%</span></div>
+<div style="display:flex;align-items:center;gap:12px"><span style="flex:none;width:150px;font:400 12.5px/1 'Space Grotesk',sans-serif;color:#B7C4D4">ECDLP over 𝔽<sub>p</sub></span><div style="flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.09)"><div style="width:41%;height:3px;border-radius:2px;background:#A98BFF"></div></div><span style="font:400 11px/1 'JetBrains Mono',monospace;color:#8496AE">41%</span></div>
+<div style="display:flex;align-items:center;gap:12px"><span style="flex:none;width:150px;font:400 12.5px/1 'Space Grotesk',sans-serif;color:#B7C4D4">Isogeny detours</span><div style="flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.09)"><div style="width:12%;height:3px;border-radius:2px;background:rgba(255,255,255,.3)"></div></div><span style="font:400 11px/1 'JetBrains Mono',monospace;color:#8496AE">12%</span></div>
+<div style="display:flex;align-items:center;gap:12px"><span style="flex:none;width:150px;font:400 12.5px/1 'Space Grotesk',sans-serif;color:#6B7E97">Pollard ρ, revisited</span><div style="flex:1;height:3px;border-radius:2px;background:rgba(255,255,255,.09)"></div><span style="font:400 11px/1 'JetBrains Mono',monospace;color:#4C5D75">0%</span></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="2b">
+<div class="dv-olabel"><a class="dv-oid" href="#2b">2b</a>Import PDF — same shell</div>
+<div class="dv-card" style="width:1280px;background:#020A19;border-color:rgba(255,255,255,.1)">
+<div style="min-height:812px;background:#020A19;font-family:'Space Grotesk',system-ui,sans-serif;display:flex;flex-direction:column">
+
+<header style="display:flex;align-items:center;gap:28px;padding:0 24px;height:60px;border-bottom:1px solid rgba(255,255,255,.07);background:#040D1E">
+<div style="display:flex;align-items:center;gap:9px">
+<svg viewBox="0 0 26 26" width="22" height="22"><circle cx="13" cy="13" r="11" fill="none" stroke="#5AC8E8" stroke-width="1.2"></circle><path d="M4 17 Q13 2 22 9" fill="none" stroke="#5AC8E8" stroke-width="1.2"></path><circle cx="13" cy="13" r="2" fill="#5AC8E8"></circle></svg>
+<span style="font:600 15px/1 'Space Grotesk',sans-serif;letter-spacing:.1em;color:#E6EDF7">MATH IS FUN</span>
+</div>
+<nav style="display:flex;align-items:center;gap:4px">
+<span style="padding:7px 12px;border-radius:5px;font:400 13px/1 'Space Grotesk',sans-serif;color:#8496AE">Library</span>
+<span style="padding:7px 12px;border-radius:5px;font:400 13px/1 'Space Grotesk',sans-serif;color:#8496AE">Threads</span>
+<span style="padding:7px 12px;border-radius:5px;font:400 13px/1 'Space Grotesk',sans-serif;color:#8496AE">Derivations</span>
+<span style="padding:7px 12px;border-radius:5px;font:400 13px/1 'Space Grotesk',sans-serif;color:#8496AE">Map</span>
+</nav>
+<div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+<span style="padding:7px 10px;border:1px solid rgba(255,255,255,.09);border-radius:5px;font:400 12px/1 'JetBrains Mono',monospace;color:#8496AE">⚙</span>
+<button style="border:none;border-radius:5px;padding:8px 15px;background:rgba(90,200,232,.14);font:600 12.5px/1 'Space Grotesk',sans-serif;color:#5AC8E8;cursor:pointer">Import PDF</button>
+</div>
+</header>
+
+<div style="padding:28px 24px;display:grid;grid-template-columns:1fr 356px;gap:20px;flex:1;align-items:start">
+<div style="display:flex;flex-direction:column;gap:20px">
+
+<div style="border:1px dashed rgba(90,200,232,.4);border-radius:8px;background:rgba(90,200,232,.04);padding:46px 32px;display:flex;flex-direction:column;align-items:center;gap:16px;text-align:center">
+<svg viewBox="0 0 200 96" width="200" height="96" style="opacity:.75;animation:drift 16s ease-in-out infinite"><path d="{{ curveWideB }}" fill="none" stroke="#5AC8E8" stroke-width="1"></path><line x1="10" y1="48" x2="190" y2="48" stroke="rgba(255,255,255,.1)" stroke-width=".6"></line></svg>
+<div style="display:flex;flex-direction:column;gap:7px">
+<span style="font:500 21px/1.3 'Space Grotesk',sans-serif;color:#E6EDF7">Drop a PDF to add it to the vault</span>
+<span style="font:300 14px/1.6 Spectral,serif;font-style:italic;color:#8496AE;max-width:420px">Preprints, seminar notes, your own scans. Read once, indexed, filed against a thread.</span>
+</div>
+<div style="display:flex;align-items:center;gap:12px"><button style="border:none;border-radius:5px;padding:9px 18px;background:#5AC8E8;font:600 12.5px/1 'Space Grotesk',sans-serif;color:#02121C;cursor:pointer">Choose file</button><span style="font:400 11.5px/1 'JetBrains Mono',monospace;color:#4C5D75">or paste an arXiv id</span></div>
+</div>
+
+<div style="border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#040D1E;overflow:hidden">
+<div style="padding:14px 20px;border-bottom:1px solid rgba(255,255,255,.07);display:flex;justify-content:space-between;align-items:center"><span style="font:400 10.5px/1 'JetBrains Mono',monospace;letter-spacing:.1em;color:#6B7E97">INGEST QUEUE</span><span style="font:400 11px/1 'JetBrains Mono',monospace;color:#4C5D75">2 items</span></div>
+
+<div style="padding:20px;display:flex;flex-direction:column;gap:18px;border-bottom:1px solid rgba(255,255,255,.05)">
+<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:20px">
+<div style="display:flex;flex-direction:column;gap:5px"><span style="font:400 15.5px/1.3 Spectral,serif;color:#E6EDF7">Shor_Algorithm_Qiskit_Risk_Added.pdf</span><span style="font:400 11px/1 'JetBrains Mono',monospace;color:#4C5D75">23 pages · 1.8 MB · pass 3 of 4</span></div>
+<span style="font:400 12px/1 'JetBrains Mono',monospace;color:#5AC8E8">82%</span>
+</div>
+<div style="height:3px;border-radius:2px;background:rgba(255,255,255,.09)"><div style="width:82%;height:3px;border-radius:2px;background:#5AC8E8"></div></div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.07);border-radius:6px;overflow:hidden">
+<div style="background:#020A19;padding:13px 14px;display:flex;flex-direction:column;gap:6px"><span style="font:400 10px/1 'JetBrains Mono',monospace;color:#6B7E97">TEXT LAYER</span><span style="font:500 14px/1 'Space Grotesk',sans-serif;color:#5AC8E8">clean</span></div>
+<div style="background:#020A19;padding:13px 14px;display:flex;flex-direction:column;gap:6px"><span style="font:400 10px/1 'JetBrains Mono',monospace;color:#6B7E97">EQUATIONS</span><span style="font:500 14px/1 'JetBrains Mono',monospace;color:#E6EDF7">147</span></div>
+<div style="background:#020A19;padding:13px 14px;display:flex;flex-direction:column;gap:6px"><span style="font:400 10px/1 'JetBrains Mono',monospace;color:#6B7E97">FIGURES</span><span style="font:500 14px/1 'JetBrains Mono',monospace;color:#E6EDF7">6</span></div>
+<div style="background:#020A19;padding:13px 14px;display:flex;flex-direction:column;gap:6px"><span style="font:400 10px/1 'JetBrains Mono',monospace;color:#6B7E97">REFERENCES</span><span style="font:500 14px/1 'Space Grotesk',sans-serif;color:#8496AE">linking…</span></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:9px">
+<span style="font:400 10.5px/1 'JetBrains Mono',monospace;letter-spacing:.1em;color:#6B7E97">CONCEPTS RECOGNISED — CONFIRM OR CUT</span>
+<div style="display:flex;flex-wrap:wrap;gap:7px">
+<span style="padding:5px 11px;border-radius:20px;background:rgba(90,200,232,.13);border:1px solid rgba(90,200,232,.3);font:400 11.5px/1 'JetBrains Mono',monospace;color:#5AC8E8">order finding ✓</span>
+<span style="padding:5px 11px;border-radius:20px;background:rgba(90,200,232,.13);border:1px solid rgba(90,200,232,.3);font:400 11.5px/1 'JetBrains Mono',monospace;color:#5AC8E8">modular exponentiation ✓</span>
+<span style="padding:5px 11px;border-radius:20px;background:rgba(90,200,232,.13);border:1px solid rgba(90,200,232,.3);font:400 11.5px/1 'JetBrains Mono',monospace;color:#5AC8E8">inverse QFT ✓</span>
+<span style="padding:5px 11px;border-radius:20px;border:1px dashed rgba(255,255,255,.16);font:400 11.5px/1 'JetBrains Mono',monospace;color:#6B7E97">continued fractions ?</span>
+<span style="padding:5px 11px;border-radius:20px;border:1px dashed rgba(255,255,255,.16);font:400 11.5px/1 'JetBrains Mono',monospace;color:#6B7E97">non-trivial √1 mod N ?</span>
+<span style="padding:5px 11px;border-radius:20px;border:1px dashed rgba(255,255,255,.16);font:400 11.5px/1 'JetBrains Mono',monospace;color:#6B7E97">Qiskit ?</span>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:10px"><button style="border:none;border-radius:5px;padding:8px 16px;background:#5AC8E8;font:600 12px/1 'Space Grotesk',sans-serif;color:#02121C;cursor:pointer">File it</button><button style="border:1px solid rgba(255,255,255,.1);background:transparent;border-radius:5px;padding:8px 14px;font:400 12px/1 'Space Grotesk',sans-serif;color:#8496AE;cursor:pointer">Edit metadata</button><span style="margin-left:auto;font:300 12.5px/1 Spectral,serif;font-style:italic;color:#4C5D75">joins thread “Order finding · Shor”</span></div>
+</div>
+
+<div style="padding:16px 20px;display:flex;justify-content:space-between;align-items:center;opacity:.6"><div style="display:flex;flex-direction:column;gap:4px"><span style="font:400 14px/1.3 Spectral,serif;color:#E6EDF7">ecdlp_seminar_notes_scan.pdf</span><span style="font:400 11px/1 'JetBrains Mono',monospace;color:#4C5D75">11 pages · handwritten · OCR pending</span></div><span style="font:400 11px/1 'JetBrains Mono',monospace;color:#6B7E97">queued</span></div>
+</div>
+</div>
+
+<aside style="border:1px solid rgba(255,255,255,.08);border-radius:8px;background:#040D1E;padding:22px;display:flex;flex-direction:column;gap:22px">
+<div style="display:flex;flex-direction:column;gap:10px">
+<span style="font:400 10.5px/1 'JetBrains Mono',monospace;letter-spacing:.1em;color:#6B7E97">WHERE IT WILL SIT</span>
+<span style="font:300 13.5px/1.7 Spectral,serif;color:#8496AE">Math is fun places each paper on the line from the integers to the curve. This one lands early — the group is still ℤ<sub>N</sub><sup>×</sup>.</span>
+</div>
+<div style="display:flex;flex-direction:column">
+<div style="display:grid;grid-template-columns:12px 1fr;gap:12px"><div style="display:flex;flex-direction:column;align-items:center"><span style="width:7px;height:7px;border-radius:50%;background:#4C5D75;margin-top:6px"></span><span style="width:1px;flex:1;background:rgba(255,255,255,.09)"></span></div><div style="padding-bottom:20px"><div style="font:400 13.5px/1.3 'Space Grotesk',sans-serif;color:#B7C4D4">ℤ<sub>N</sub><sup>×</sup> — multiplicative order</div><div style="font:400 11px/1 'JetBrains Mono',monospace;color:#4C5D75;margin-top:5px">4 papers</div></div></div>
+<div style="display:grid;grid-template-columns:12px 1fr;gap:12px"><div style="display:flex;flex-direction:column;align-items:center"><span style="width:9px;height:9px;border-radius:50%;background:#5AC8E8;margin-top:5px"></span><span style="width:1px;flex:1;background:rgba(255,255,255,.09)"></span></div><div style="padding-bottom:20px"><div style="font:500 13.5px/1.3 'Space Grotesk',sans-serif;color:#E6EDF7">Shor / period finding</div><div style="font:400 11px/1 'JetBrains Mono',monospace;color:#5AC8E8;margin-top:5px">this one, + 3</div></div></div>
+<div style="display:grid;grid-template-columns:12px 1fr;gap:12px"><div style="display:flex;flex-direction:column;align-items:center"><span style="width:7px;height:7px;border-radius:50%;background:#4C5D75;margin-top:6px"></span><span style="width:1px;flex:1;background:rgba(255,255,255,.09)"></span></div><div style="padding-bottom:20px"><div style="font:400 13.5px/1.3 'Space Grotesk',sans-serif;color:#B7C4D4">E(𝔽<sub>p</sub>) — the group law</div><div style="font:400 11px/1 'JetBrains Mono',monospace;color:#4C5D75;margin-top:5px">7 papers</div></div></div>
+<div style="display:grid;grid-template-columns:12px 1fr;gap:12px"><div style="display:flex;flex-direction:column;align-items:center"><span style="width:7px;height:7px;border-radius:50%;border:1px solid #4C5D75;margin-top:6px"></span></div><div><div style="font:400 13.5px/1.3 'Space Grotesk',sans-serif;color:#8496AE">Discrete ECDLP, quantum</div><div style="font:400 11px/1 'JetBrains Mono',monospace;color:#4C5D75;margin-top:5px">2 papers · yours</div></div></div>
+</div>
+<div style="margin-top:auto;padding-top:18px;border-top:1px solid rgba(255,255,255,.07);font:300 13px/1.7 Spectral,serif;font-style:italic;color:#4C5D75">Ingest runs on its own time. You can close the tab.</div>
+</aside>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+<p class="dv-next">Try next: “take <a class="dv-oid" href="#2a">2a</a> further — hover states, sort, an empty state” · “merge <a class="dv-oid" href="#2a">2a</a>'s shell with <a class="dv-oid" href="#1c">1c</a>'s reader” · “a light version of <a class="dv-oid" href="#2a">2a</a>”</p>
+</section>
+
+<section class="dv-turn" id="t1">
+<div class="dv-thd"><a class="dv-tid" href="#t1">1</a><span class="dv-tname">Math is fun — a quiet notebook for the elliptic &amp; quantum discrete-log work</span></div>
+<div class="dv-opts">
+
+<div class="dv-opt" id="1a">
+<div class="dv-olabel"><a class="dv-oid" href="#1a">1a</a>Library — desktop</div>
+<div class="dv-card" style="width:1280px">
+<div style="display:grid;grid-template-columns:228px 1fr;min-height:812px;background:#f4f1ea">
+
+<aside style="border-right:1px solid rgba(35,36,31,.1);padding:30px 22px;display:flex;flex-direction:column;gap:34px;background:#efebe1">
+<div style="display:flex;flex-direction:column;gap:5px">
+<div style="font:400 19px/1 Spectral,serif;letter-spacing:.18em;color:#23241f">MATH IS FUN</div>
+<div style="font:300 10.5px/1.5 'JetBrains Mono',monospace;color:rgba(35,36,31,.42);letter-spacing:.04em">discrete logs, slowly</div>
+</div>
+<nav style="display:flex;flex-direction:column;gap:2px">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border-radius:4px;background:rgba(92,111,90,.14);font:400 14px/1 Spectral,serif;color:#23241f">Library<span style="font:300 10px 'JetBrains Mono',monospace;color:rgba(35,36,31,.4)">24</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border-radius:4px;font:400 14px/1 Spectral,serif;color:rgba(35,36,31,.66)">Derivations<span style="font:300 10px 'JetBrains Mono',monospace;color:rgba(35,36,31,.3)">9</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border-radius:4px;font:400 14px/1 Spectral,serif;color:rgba(35,36,31,.66)">Open questions<span style="font:300 10px 'JetBrains Mono',monospace;color:rgba(35,36,31,.3)">6</span></div>
+<div style="display:flex;justify-content:space-between;align-items:center;padding:7px 10px;border-radius:4px;font:400 14px/1 Spectral,serif;color:rgba(35,36,31,.66)">Archive<span style="font:300 10px 'JetBrains Mono',monospace;color:rgba(35,36,31,.3)">31</span></div>
+</nav>
+<div style="display:flex;flex-direction:column;gap:11px">
+<div style="font:300 9.5px/1 'JetBrains Mono',monospace;letter-spacing:.16em;color:rgba(35,36,31,.36)">THREADS</div>
+<div style="display:flex;flex-direction:column;gap:9px">
+<div style="display:flex;align-items:center;gap:9px"><span style="width:6px;height:6px;border-radius:50%;background:#5c6f5a"></span><span style="font:400 13px/1.3 Spectral,serif;color:rgba(35,36,31,.78)">ECDLP over 𝔽<sub>p</sub></span></div>
+<div style="display:flex;align-items:center;gap:9px"><span style="width:6px;height:6px;border-radius:50%;background:#a8763e"></span><span style="font:400 13px/1.3 Spectral,serif;color:rgba(35,36,31,.78)">Order finding · Shor</span></div>
+<div style="display:flex;align-items:center;gap:9px"><span style="width:6px;height:6px;border-radius:50%;background:#7a6a86"></span><span style="font:400 13px/1.3 Spectral,serif;color:rgba(35,36,31,.78)">Isogeny detours</span></div>
+<div style="display:flex;align-items:center;gap:9px"><span style="width:6px;height:6px;border-radius:50%;background:rgba(35,36,31,.24)"></span><span style="font:400 13px/1.3 Spectral,serif;color:rgba(35,36,31,.48)">Pollard ρ, revisited</span></div>
+</div>
+</div>
+<div style="margin-top:auto;padding-top:22px;border-top:1px solid rgba(35,36,31,.1)">
+<svg viewBox="0 0 184 96" width="184" height="96" style="display:block;opacity:.5;animation:drift 14s ease-in-out infinite"><path d="{{ curveWide }}" fill="none" stroke="#5c6f5a" stroke-width="1"></path><line x1="8" y1="48" x2="176" y2="48" stroke="rgba(35,36,31,.16)" stroke-width=".6"></line></svg>
+<div style="margin-top:9px;font:300 9.5px/1.5 'JetBrains Mono',monospace;color:rgba(35,36,31,.36)">y² = x³ − 3x + 3 over ℝ</div>
+</div>
+</aside>
+
+<main style="padding:34px 40px 40px;display:grid;grid-template-columns:1fr 296px;gap:38px;align-items:start">
+<div style="display:flex;flex-direction:column;gap:26px">
+<header style="display:flex;flex-direction:column;gap:12px">
+<div style="display:flex;justify-content:space-between;align-items:flex-end">
+<div style="display:flex;flex-direction:column;gap:6px">
+<h1 style="margin:0;font:300 34px/1.1 Spectral,serif;color:#23241f;letter-spacing:-.01em">Library</h1>
+<p style="margin:0;font:300 14.5px/1.5 Spectral,serif;color:rgba(35,36,31,.5);font-style:italic">Twenty-four papers. Six of them you have actually finished.</p>
+</div>
+<button style="border:1px solid rgba(35,36,31,.2);background:transparent;border-radius:4px;padding:8px 15px;font:400 12.5px/1 'JetBrains Mono',monospace;color:#23241f;cursor:pointer" style-hover="background:rgba(92,111,90,.13);border-color:rgba(92,111,90,.4)">+ upload PDF</button>
+</div>
+<div style="display:flex;align-items:center;gap:14px;border-bottom:1px solid rgba(35,36,31,.14);padding-bottom:9px">
+<span style="font:300 12px 'JetBrains Mono',monospace;color:rgba(35,36,31,.3)">⌕</span>
+<span style="font:300 14px/1 Spectral,serif;color:rgba(35,36,31,.36);font-style:italic">search titles, notation, or a phrase you half-remember</span>
+</div>
+</header>
+
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<span style="padding:5px 11px;border-radius:20px;background:rgba(35,36,31,.07);font:300 11px/1 'JetBrains Mono',monospace;color:rgba(35,36,31,.62)">all</span>
+<span style="padding:5px 11px;border-radius:20px;border:1px solid rgba(35,36,31,.14);font:300 11px/1 'JetBrains Mono',monospace;color:rgba(35,36,31,.44)">reading</span>
+<span style="padding:5px 11px;border-radius:20px;border:1px solid rgba(35,36,31,.14);font:300 11px/1 'JetBrains Mono',monospace;color:rgba(35,36,31,.44)">annotated</span>
+<span style="padding:5px 11px;border-radius:20px;border:1px solid rgba(35,36,31,.14);font:300 11px/1 'JetBrains Mono',monospace;color:rgba(35,36,31,.44)">mine</span>
+<span style="padding:5px 11px;border-radius:20px;border:1px solid rgba(35,36,31,.14);font:300 11px/1 'JetBrains Mono',monospace;color:rgba(35,36,31,.44)">untouched</span>
+</div>
+
+<div style="display:flex;flex-direction:column">
+<div style="display:grid;grid-template-columns:64px 1fr 130px 78px;gap:20px;align-items:center;padding:17px 4px;border-top:1px solid rgba(35,36,31,.12);background:rgba(92,111,90,.06)">
+<div style="width:64px;height:46px;border-radius:3px;background:#efebe1;border:1px solid rgba(35,36,31,.1);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 60 42" width="56" height="40"><path d="{{ curveSmall }}" fill="none" stroke="#a8763e" stroke-width=".9"></path></svg></div>
+<div style="display:flex;flex-direction:column;gap:4px">
+<div style="font:400 16.5px/1.25 Spectral,serif;color:#23241f">Shor's Algorithm in Qiskit — from controlled modular exponentiation to IQFT cancellation</div>
+<div style="font:300 11.5px/1 'JetBrains Mono',monospace;color:rgba(35,36,31,.45)">yours · 23 pp · 8 Aug 2026 · N=15, a=2, r=4</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px"><div style="height:2px;background:rgba(35,36,31,.12)"><div style="width:76%;height:2px;background:#a8763e"></div></div><span style="font:300 10.5px 'JetBrains Mono',monospace;color:rgba(35,36,31,.42)">76% · 14 notes</span></div>
+<span style="font:300 11px 'JetBrains Mono',monospace;color:#a8763e;text-align:right">reading</span>
+</div>
+
+<div style="display:grid;grid-template-columns:64px 1fr 130px 78px;gap:20px;align-items:center;padding:17px 4px;border-top:1px solid rgba(35,36,31,.12)">
+<div style="width:64px;height:46px;border-radius:3px;background:#efebe1;border:1px solid rgba(35,36,31,.1);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 60 42" width="56" height="40"><path d="{{ curveSmall }}" fill="none" stroke="#5c6f5a" stroke-width=".9"></path></svg></div>
+<div style="display:flex;flex-direction:column;gap:4px">
+<div style="font:400 16.5px/1.25 Spectral,serif;color:#23241f">The discrete logarithm on E(𝔽<sub>p</sub>): why the group law resists index calculus</div>
+<div style="font:300 11.5px/1 'JetBrains Mono',monospace;color:rgba(35,36,31,.45)">Galbraith &amp; Gaudry · 41 pp · added 2 Aug</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px"><div style="height:2px;background:rgba(35,36,31,.12)"><div style="width:34%;height:2px;background:#5c6f5a"></div></div><span style="font:300 10.5px 'JetBrains Mono',monospace;color:rgba(35,36,31,.42)">34% · 6 notes</span></div>
+<span style="font:300 11px 'JetBrains Mono',monospace;color:rgba(35,36,31,.32);text-align:right">reading</span>
+</div>
+
+<div style="display:grid;grid-template-columns:64px 1fr 130px 78px;gap:20px;align-items:center;padding:17px 4px;border-top:1px solid rgba(35,36,31,.12)">
+<div style="width:64px;height:46px;border-radius:3px;background:#efebe1;border:1px solid rgba(35,36,31,.1);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 60 42" width="56" height="40"><path d="{{ curveSmall }}" fill="none" stroke="#7a6a86" stroke-width=".9"></path></svg></div>
+<div style="display:flex;flex-direction:column;gap:4px">
+<div style="font:400 16.5px/1.25 Spectral,serif;color:#23241f">Quantum order finding for elliptic-curve groups: register layout and gate cost</div>
+<div style="font:300 11.5px/1 'JetBrains Mono',monospace;color:rgba(35,36,31,.45)">Proos–Zalka, annotated · 18 pp · added 29 Jul</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px"><div style="height:2px;background:rgba(35,36,31,.12)"><div style="width:100%;height:2px;background:rgba(35,36,31,.34)"></div></div><span style="font:300 10.5px 'JetBrains Mono',monospace;color:rgba(35,36,31,.42)">done · 22 notes</span></div>
+<span style="font:300 11px 'JetBrains Mono',monospace;color:rgba(35,36,31,.32);text-align:right">finished</span>
+</div>
+
+<div style="display:grid;grid-template-columns:64px 1fr 130px 78px;gap:20px;align-items:center;padding:17px 4px;border-top:1px solid rgba(35,36,31,.12)">
+<div style="width:64px;height:46px;border-radius:3px;background:#efebe1;border:1px solid rgba(35,36,31,.1);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 60 42" width="56" height="40"><path d="{{ curveSmall }}" fill="none" stroke="rgba(35,36,31,.3)" stroke-width=".9"></path></svg></div>
+<div style="display:flex;flex-direction:column;gap:4px">
+<div style="font:400 16.5px/1.25 Spectral,serif;color:rgba(35,36,31,.78)">Pollard's ρ with distinguished points — parallel collision search</div>
+<div style="font:300 11.5px/1 'JetBrains Mono',monospace;color:rgba(35,36,31,.45)">van Oorschot–Wiener · 28 pp · added 21 Jul</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px"><div style="height:2px;background:rgba(35,36,31,.12)"></div><span style="font:300 10.5px 'JetBrains Mono',monospace;color:rgba(35,36,31,.3)">not opened</span></div>
+<span style="font:300 11px 'JetBrains Mono',monospace;color:rgba(35,36,31,.26);text-align:right">—</span>
+</div>
+
+<div style="display:grid;grid-template-columns:64px 1fr 130px 78px;gap:20px;align-items:center;padding:17px 4px;border-top:1px solid rgba(35,36,31,.12);border-bottom:1px solid rgba(35,36,31,.12)">
+<div style="width:64px;height:46px;border-radius:3px;background:#efebe1;border:1px solid rgba(35,36,31,.1);display:flex;align-items:center;justify-content:center"><svg viewBox="0 0 60 42" width="56" height="40"><path d="{{ curveSmall }}" fill="none" stroke="rgba(35,36,31,.3)" stroke-width=".9"></path></svg></div>
+<div style="display:flex;flex-direction:column;gap:4px">
+<div style="font:400 16.5px/1.25 Spectral,serif;color:rgba(35,36,31,.78)">Baby-step giant-step, and the memory you cannot afford</div>
+<div style="font:300 11.5px/1 'JetBrains Mono',monospace;color:rgba(35,36,31,.45)">seminar notes · 11 pp · added 14 Jul</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:6px"><div style="height:2px;background:rgba(35,36,31,.12)"><div style="width:12%;height:2px;background:rgba(35,36,31,.34)"></div></div><span style="font:300 10.5px 'JetBrains Mono',monospace;color:rgba(35,36,31,.42)">12% · 1 note</span></div>
+<span style="font:300 11px 'JetBrains Mono',monospace;color:rgba(35,36,31,.26);text-align:right">—</span>
+</div>
+</div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:26px;padding-top:6px">
+<div style="border:1px solid rgba(35,36,31,.13);border-radius:5px;padding:20px;background:#efebe1;display:flex;flex-direction:column;gap:13px">
+<div style="font:300 9.5px/1 'JetBrains Mono',monospace;letter-spacing:.16em;color:rgba(35,36,31,.38)">WHERE YOU LEFT OFF</div>
+<div style="font:400 15.5px/1.35 Spectral,serif;color:#23241f">§2.9 — Where cancellation actually happens</div>
+<div style="font:300 13px/1.6 Spectral,serif;color:rgba(35,36,31,.6);font-style:italic">The IQFT does not find the period. It arranges for every non-multiple of Q/r to cancel, and lets what remains be read.</div>
+<div style="height:1px;background:rgba(35,36,31,.12)"></div>
+<div style="font:300 11px/1.5 'JetBrains Mono',monospace;color:rgba(35,36,31,.45)">peaks at y = 0, 64, 128, 192 → r = 4</div>
+</div>
+
+<div style="border:1px solid rgba(35,36,31,.13);border-radius:5px;padding:20px;display:flex;flex-direction:column;gap:14px">
+<div style="font:300 9.5px/1 'JetBrains Mono',monospace;letter-spacing:.16em;color:rgba(35,36,31,.38)">THE THREAD, SO FAR</div>
+<div style="display:flex;flex-direction:column;gap:11px">
+<div style="display:grid;grid-template-columns:14px 1fr;gap:10px;align-items:start"><span style="width:7px;height:7px;border-radius:50%;background:#5c6f5a;margin-top:6px"></span><div style="font:400 13.5px/1.4 Spectral,serif;color:#23241f">factoring → order finding<div style="font:300 11px 'JetBrains Mono',monospace;color:rgba(35,36,31,.4);margin-top:3px">settled</div></div></div>
+<div style="display:grid;grid-template-columns:14px 1fr;gap:10px;align-items:start"><span style="width:7px;height:7px;border-radius:50%;background:#5c6f5a;margin-top:6px"></span><div style="font:400 13.5px/1.4 Spectral,serif;color:#23241f">gcd(a<sup>r/2</sup>±1, N) failure case<div style="font:300 11px 'JetBrains Mono',monospace;color:rgba(35,36,31,.4);margin-top:3px">settled · §1.5</div></div></div>
+<div style="display:grid;grid-template-columns:14px 1fr;gap:10px;align-items:start"><span style="width:7px;height:7px;border-radius:50%;background:#a8763e;margin-top:6px"></span><div style="font:400 13.5px/1.4 Spectral,serif;color:#23241f">same idea on E(𝔽<sub>p</sub>): what plays the role of a<sup>x</sup>?<div style="font:300 11px 'JetBrains Mono',monospace;color:rgba(35,36,31,.4);margin-top:3px">in progress</div></div></div>
+<div style="display:grid;grid-template-columns:14px 1fr;gap:10px;align-items:start"><span style="width:7px;height:7px;border-radius:50%;border:1px solid rgba(35,36,31,.32);margin-top:6px"></span><div style="font:400 13.5px/1.4 Spectral,serif;color:rgba(35,36,31,.55)">discrete: point counting cost at 256 bits<div style="font:300 11px 'JetBrains Mono',monospace;color:rgba(35,36,31,.35);margin-top:3px">open</div></div></div>
+</div>
+</div>
+
+<div style="padding:18px 4px;border-top:1px solid rgba(35,36,31,.12)">
+<div style="font:300 13.5px/1.7 Spectral,serif;color:rgba(35,36,31,.5);font-style:italic">Nothing due. Read whatever the wind hands you.</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="1b">
+<div class="dv-olabel"><a class="dv-oid" href="#1b">1b</a>Upload &amp; ingest — desktop</div>
+<div class="dv-card" style="width:1280px">
+<div style="min-height:812px;background:#f4f1ea;display:grid;grid-template-columns:1fr 372px">
+<div style="padding:44px 48px;display:flex;flex-direction:column;gap:32px">
+<div style="display:flex;align-items:center;gap:14px">
+<span style="font:400 15px/1 Spectral,serif;letter-spacing:.18em;color:rgba(35,36,31,.55)">MATH IS FUN</span>
+<span style="width:1px;height:14px;background:rgba(35,36,31,.18)"></span>
+<span style="font:300 12px/1 'JetBrains Mono',monospace;color:rgba(35,36,31,.42)">add to library</span>
+</div>
+
+<div style="border:1px dashed rgba(92,111,90,.45);border-radius:6px;background:rgba(92,111,90,.05);padding:56px 40px;display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center">
+<svg viewBox="0 0 200 108" width="200" height="108" style="opacity:.6;animation:drift 16s ease-in-out infinite"><path d="{{ curveWideB }}" fill="none" stroke="#5c6f5a" stroke-width="1"></path><circle cx="100" cy="54" r="2.6" fill="#a8763e"></circle><line x1="10" y1="54" x2="190" y2="54" stroke="rgba(35,36,31,.14)" stroke-width=".6"></line></svg>
+<div style="display:flex;flex-direction:column;gap:8px">
+<div style="font:300 25px/1.25 Spectral,serif;color:#23241f">Drop a PDF here</div>
+<div style="font:300 14px/1.6 Spectral,serif;color:rgba(35,36,31,.5);font-style:italic;max-width:400px">Notes, preprints, your own handwritten scans. It will be read once, quietly, and filed.</div>
+</div>
+<div style="display:flex;align-items:center;gap:14px"><button style="border:1px solid rgba(35,36,31,.24);background:#f4f1ea;border-radius:4px;padding:9px 18px;font:400 12.5px/1 'JetBrains Mono',monospace;color:#23241f;cursor:pointer" style-hover="border-color:#5c6f5a;color:#5c6f5a">choose file</button><span style="font:300 11.5px/1 'JetBrains Mono',monospace;color:rgba(35,36,31,.35)">or paste an arXiv id</span></div>
+</div>
+
+<div style="display:flex;flex-direction:column;gap:16px">
+<div style="font:300 9.5px/1 'JetBrains Mono',monospace;letter-spacing:.16em;color:rgba(35,36,31,.38)">IN THE QUEUE</div>
+
+<div style="border:1px solid rgba(35,36,31,.14);border-radius:5px;background:#efebe1;padding:22px 24px;display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:24px">
+<div style="display:flex;flex-direction:column;gap:5px">
+<div style="font:400 17px/1.3 Spectral,serif;color:#23241f">Shor_Algorithm_Qiskit_Risk_Added.pdf</div>
+<div style="font:300 11.5px/1 'JetBrains Mono',monospace;color:rgba(35,36,31,.45)">23 pages · 1.8 MB · reading pass 3 of 4</div>
+</div>
+<span style="font:300 11px/1 'JetBrains Mono',monospace;color:#a8763e">82%</span>
+</div>
+<div style="height:2px;background:rgba(35,36,31,.12)"><div style="width:82%;height:2px;background:#a8763e"></div></div>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(35,36,31,.11);border:1px solid rgba(35,36,31,.11);border-radius:4px;overflow:hidden">
+<div style="background:#efebe1;padding:13px 14px;display:flex;flex-direction:column;gap:5px"><span style="font:300 10px 'JetBrains Mono',monospace;color:rgba(35,36,31,.4)">text layer</span><span style="font:400 14px Spectral,serif;color:#5c6f5a">clean</span></div>
+<div style="background:#efebe1;padding:13px 14px;display:flex;flex-direction:column;gap:5px"><span style="font:300 10px 'JetBrains Mono',monospace;color:rgba(35,36,31,.4)">equations</span><span style="font:400 14px Spectral,serif;color:#23241f">147 found</span></div>
+<div style="background:#efebe1;padding:13px 14px;display:flex;flex-direction:column;gap:5px"><span style="font:300 10px 'JetBrains Mono',monospace;color:rgba(35,36,31,.4)">figures</span><span style="font:400 14px Spectral,serif;color:#23241f">6 circuits</span></div>
+<div style="background:#efebe1;padding:13px 14px;display:flex;flex-direction:column;gap:5px"><span style="font:300 10px 'JetBrains Mono',monospace;color:rgba(35,36,31,.4)">references</span><span style="font:400 14px Spectral,serif;color:rgba(35,36,31,.5)">linking…</span></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<div style="font:300 9.5px/1 'JetBrains Mono',monospace;letter-spacing:.16em;color:rgba(35,36,31,.38)">CONCEPTS IT RECOGNISED — CONFIRM OR CUT</div>
+<div style="display:flex;flex-wrap:wrap;gap:7px">
+<span style="padding:5px 11px;border-radius:20px;background:rgba(92,111,90,.16);border:1px solid rgba(92,111,90,.32);font:300 11.5px/1 'JetBrains Mono',monospace;color:#3f4d3e">order finding ✓</span>
+<span style="padding:5px 11px;border-radius:20px;background:rgba(92,111,90,.16);border:1px solid rgba(92,111,90,.32);font:300 11.5px/1 'JetBrains Mono',monospace;color:#3f4d3e">modular exponentiation ✓</span>
+<span style="padding:5px 11px;border-radius:20px;background:rgba(92,111,90,.16);border:1px solid rgba(92,111,90,.32);font:300 11.5px/1 'JetBrains Mono',monospace;color:#3f4d3e">inverse QFT ✓</span>
+<span style="padding:5px 11px;border-radius:20px;border:1px dashed rgba(35,36,31,.28);font:300 11.5px/1 'JetBrains Mono',monospace;color:rgba(35,36,31,.5)">continued fractions ?</span>
+<span style="padding:5px 11px;border-radius:20px;border:1px dashed rgba(35,36,31,.28);font:300 11.5px/1 'JetBrains Mono',monospace;color:rgba(35,36,31,.5)">non-trivial √1 mod N ?</span>
+<span style="padding:5px 11px;border-radius:20px;border:1px dashed rgba(35,36,31,.28);font:300 11.5px/1 'JetBrains Mono',monospace;color:rgba(35,36,31,.5)">Qiskit ?</span>
+</div>
+</div>
+<div style="display:flex;align-items:center;gap:12px;padding-top:4px">
+<button style="border:none;background:#5c6f5a;border-radius:4px;padding:9px 18px;font:400 12.5px/1 'JetBrains Mono',monospace;color:#f4f1ea;cursor:pointer" style-hover="background:#3f4d3e">file it</button>
+<button style="border:1px solid rgba(35,36,31,.2);background:transparent;border-radius:4px;padding:9px 16px;font:400 12.5px/1 'JetBrains Mono',monospace;color:rgba(35,36,31,.6);cursor:pointer">edit metadata</button>
+<span style="margin-left:auto;font:300 11.5px/1 Spectral,serif;font-style:italic;color:rgba(35,36,31,.42)">it will join the thread “Order finding · Shor”</span>
+</div>
+</div>
+
+<div style="border:1px solid rgba(35,36,31,.11);border-radius:5px;padding:18px 24px;display:flex;justify-content:space-between;align-items:center;opacity:.62">
+<div style="display:flex;flex-direction:column;gap:4px"><div style="font:400 15px/1.3 Spectral,serif;color:#23241f">ecdlp_seminar_notes_scan.pdf</div><div style="font:300 11px 'JetBrains Mono',monospace;color:rgba(35,36,31,.44)">11 pages · handwritten · waiting</div></div>
+<span style="font:300 11px 'JetBrains Mono',monospace;color:rgba(35,36,31,.4)">queued</span>
+</div>
+</div>
+</div>
+
+<aside style="border-left:1px solid rgba(35,36,31,.1);background:#efebe1;padding:44px 32px;display:flex;flex-direction:column;gap:30px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<div style="font:300 9.5px/1 'JetBrains Mono',monospace;letter-spacing:.16em;color:rgba(35,36,31,.38)">WHERE IT WILL SIT</div>
+<div style="font:300 14px/1.7 Spectral,serif;color:rgba(35,36,31,.62)">Math is fun places each paper on the line from the integers to the curve. This one lands early — the finite abelian group is still ℤ<sub>N</sub><sup>×</sup>.</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:0">
+<div style="display:grid;grid-template-columns:12px 1fr;gap:12px"><div style="display:flex;flex-direction:column;align-items:center"><span style="width:7px;height:7px;border-radius:50%;background:rgba(35,36,31,.3);margin-top:6px"></span><span style="width:1px;flex:1;background:rgba(35,36,31,.16)"></span></div><div style="padding-bottom:22px"><div style="font:400 14px/1.35 Spectral,serif;color:rgba(35,36,31,.7)">ℤ<sub>N</sub><sup>×</sup> — multiplicative order</div><div style="font:300 11px/1.5 'JetBrains Mono',monospace;color:rgba(35,36,31,.4);margin-top:3px">4 papers</div></div></div>
+<div style="display:grid;grid-template-columns:12px 1fr;gap:12px"><div style="display:flex;flex-direction:column;align-items:center"><span style="width:9px;height:9px;border-radius:50%;background:#a8763e;margin-top:5px"></span><span style="width:1px;flex:1;background:rgba(35,36,31,.16)"></span></div><div style="padding-bottom:22px"><div style="font:400 14px/1.35 Spectral,serif;color:#23241f">Shor / period finding</div><div style="font:300 11px/1.5 'JetBrains Mono',monospace;color:#a8763e;margin-top:3px">this one, + 3</div></div></div>
+<div style="display:grid;grid-template-columns:12px 1fr;gap:12px"><div style="display:flex;flex-direction:column;align-items:center"><span style="width:7px;height:7px;border-radius:50%;background:rgba(35,36,31,.3);margin-top:6px"></span><span style="width:1px;flex:1;background:rgba(35,36,31,.16)"></span></div><div style="padding-bottom:22px"><div style="font:400 14px/1.35 Spectral,serif;color:rgba(35,36,31,.7)">E(𝔽<sub>p</sub>) — the group law</div><div style="font:300 11px/1.5 'JetBrains Mono',monospace;color:rgba(35,36,31,.4);margin-top:3px">7 papers</div></div></div>
+<div style="display:grid;grid-template-columns:12px 1fr;gap:12px"><div style="display:flex;flex-direction:column;align-items:center"><span style="width:7px;height:7px;border-radius:50%;border:1px solid rgba(35,36,31,.3);margin-top:6px"></span></div><div><div style="font:400 14px/1.35 Spectral,serif;color:rgba(35,36,31,.55)">discrete ECDLP, quantum</div><div style="font:300 11px/1.5 'JetBrains Mono',monospace;color:rgba(35,36,31,.4);margin-top:3px">2 papers · your own</div></div></div>
+</div>
+<div style="margin-top:auto;padding-top:22px;border-top:1px solid rgba(35,36,31,.12);font:300 13px/1.7 Spectral,serif;font-style:italic;color:rgba(35,36,31,.46)">Ingest runs on its own time. You can close the window.</div>
+</aside>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="1c">
+<div class="dv-olabel"><a class="dv-oid" href="#1c">1c</a>Reader — margin notes</div>
+<div class="dv-card" style="width:1180px">
+<div style="min-height:820px;background:#f4f1ea;display:grid;grid-template-columns:1fr 320px">
+<div style="padding:36px 46px 46px;display:flex;flex-direction:column;gap:26px">
+<div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px solid rgba(35,36,31,.12)">
+<div style="display:flex;align-items:center;gap:12px"><span style="font:300 12px 'JetBrains Mono',monospace;color:rgba(35,36,31,.4)">←</span><span style="font:400 13.5px/1 Spectral,serif;color:rgba(35,36,31,.66)">Shor's Algorithm in Qiskit</span></div>
+<div style="display:flex;align-items:center;gap:18px;font:300 11px 'JetBrains Mono',monospace;color:rgba(35,36,31,.4)"><span>§2.9</span><span>p. 11 / 23</span><span style="color:#a8763e">76%</span></div>
+</div>
+<article style="max-width:640px;display:flex;flex-direction:column;gap:20px">
+<h2 style="margin:0;font:300 27px/1.25 Spectral,serif;color:#23241f">Where cancellation actually happens</h2>
+<p style="margin:0;font:400 17px/1.75 Spectral,serif;color:#2c2d27;text-wrap:pretty">After the controlled modular exponentiation, the counting register holds every exponent <em>x</em> at once, entangled with <em>a<sup>x</sup></em> mod <em>N</em>. Measuring the work register — or simply ignoring it — leaves the counting register in a superposition supported on an arithmetic progression of spacing <em>r</em>.</p>
+<div style="padding:22px 26px;background:rgba(92,111,90,.07);border-left:2px solid rgba(92,111,90,.4);font:400 16px/1.9 Spectral,serif;color:#23241f;text-align:center">|ψ⟩ ∝ Σ<sub>j</sub> |x₀ + jr⟩ &nbsp;&nbsp;⟶<sup style="font-size:11px">QFT⁻¹</sup>&nbsp;&nbsp; peaks at y ≈ kQ/r</div>
+<p style="margin:0;font:400 17px/1.75 Spectral,serif;color:#2c2d27;text-wrap:pretty">The inverse QFT does not <em>find</em> the period. It arranges the phases so that every <span style="background:rgba(168,118,62,.22);padding:1px 3px">y that is not close to a multiple of Q/r destructively cancels</span>. What survives is what you measure.</p>
+<p style="margin:0;font:400 17px/1.75 Spectral,serif;color:#2c2d27;text-wrap:pretty">With Q = 2⁸ = 256 and r = 4, the spacing Q/r = 64 is exact, so the peaks are perfectly sharp: y ∈ {0, 64, 128, 192}. Nothing is lost to leakage; the continued-fraction step is trivial here and only earns its keep when r ∤ Q.</p>
+<div style="display:flex;align-items:flex-end;gap:8px;height:110px;padding:16px 0 0;border-bottom:1px solid rgba(35,36,31,.16)">
+<div style="flex:1;height:88px;background:#a8763e"></div><div style="flex:1;height:3px;background:rgba(35,36,31,.14)"></div><div style="flex:1;height:2px;background:rgba(35,36,31,.14)"></div><div style="flex:1;height:4px;background:rgba(35,36,31,.14)"></div><div style="flex:1;height:88px;background:#a8763e"></div><div style="flex:1;height:2px;background:rgba(35,36,31,.14)"></div><div style="flex:1;height:3px;background:rgba(35,36,31,.14)"></div><div style="flex:1;height:2px;background:rgba(35,36,31,.14)"></div><div style="flex:1;height:88px;background:#a8763e"></div><div style="flex:1;height:3px;background:rgba(35,36,31,.14)"></div><div style="flex:1;height:2px;background:rgba(35,36,31,.14)"></div><div style="flex:1;height:3px;background:rgba(35,36,31,.14)"></div><div style="flex:1;height:88px;background:#a8763e"></div><div style="flex:1;height:2px;background:rgba(35,36,31,.14)"></div><div style="flex:1;height:3px;background:rgba(35,36,31,.14)"></div><div style="flex:1;height:2px;background:rgba(35,36,31,.14)"></div>
+</div>
+<div style="display:flex;justify-content:space-between;font:300 10.5px 'JetBrains Mono',monospace;color:rgba(35,36,31,.4)"><span>y = 0</span><span>64</span><span>128</span><span>192</span><span>255</span></div>
+</article>
+</div>
+<aside style="border-left:1px solid rgba(35,36,31,.1);background:#efebe1;padding:34px 26px;display:flex;flex-direction:column;gap:22px">
+<div style="font:300 9.5px/1 'JetBrains Mono',monospace;letter-spacing:.16em;color:rgba(35,36,31,.38)">MARGIN · 14 NOTES</div>
+<div style="display:flex;flex-direction:column;gap:18px">
+<div style="border-left:2px solid #a8763e;padding:2px 0 2px 14px;display:flex;flex-direction:column;gap:6px"><div style="font:400 14.5px/1.6 Spectral,serif;color:#23241f">On E(𝔽<sub>p</sub>) the analogue is [x]P, and the “period” is the order of P. Same circuit, different group — the cost is all in the point addition.</div><div style="font:300 10.5px 'JetBrains Mono',monospace;color:rgba(35,36,31,.4)">you · 8 Aug · anchored ¶2</div></div>
+<div style="border-left:2px solid rgba(35,36,31,.2);padding:2px 0 2px 14px;display:flex;flex-direction:column;gap:6px"><div style="font:400 14.5px/1.6 Spectral,serif;color:rgba(35,36,31,.75)">Check: does exactness of Q/r ever hold for a 256-bit curve order? Almost never. So continued fractions is the real work.</div><div style="font:300 10.5px 'JetBrains Mono',monospace;color:rgba(35,36,31,.4)">you · 8 Aug · open question</div></div>
+<div style="border-left:2px solid rgba(122,106,134,.5);padding:2px 0 2px 14px;display:flex;flex-direction:column;gap:6px"><div style="font:400 14.5px/1.6 Spectral,serif;color:rgba(35,36,31,.75)">→ links to <span style="border-bottom:1px solid rgba(122,106,134,.6)">Proos–Zalka §3, register layout</span></div><div style="font:300 10.5px 'JetBrains Mono',monospace;color:rgba(35,36,31,.4)">auto-linked</div></div>
+</div>
+<div style="margin-top:auto;border:1px dashed rgba(35,36,31,.2);border-radius:4px;padding:14px;font:300 13.5px/1.6 Spectral,serif;font-style:italic;color:rgba(35,36,31,.4)">select a line to leave a note…</div>
+</aside>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="1d">
+<div class="dv-olabel"><a class="dv-oid" href="#1d">1d</a>Reader — dusk / one-column focus</div>
+<div class="dv-card" style="width:820px;background:#22241f;border-color:rgba(244,241,234,.12)">
+<div style="min-height:820px;background:#22241f;padding:44px 0 56px;display:flex;flex-direction:column;align-items:center;gap:34px">
+<div style="width:600px;display:flex;justify-content:space-between;align-items:center;font:300 11px 'JetBrains Mono',monospace;color:rgba(244,241,234,.34)"><span>Shor's Algorithm in Qiskit</span><span>§2.9 · p. 11</span></div>
+<article style="width:600px;display:flex;flex-direction:column;gap:22px">
+<h2 style="margin:0;font:300 28px/1.25 Spectral,serif;color:#f0ece2">Where cancellation actually happens</h2>
+<p style="margin:0;font:300 18px/1.85 Spectral,serif;color:rgba(240,236,226,.82);text-wrap:pretty">After the controlled modular exponentiation, the counting register holds every exponent <em>x</em> at once, entangled with <em>a<sup>x</sup></em> mod <em>N</em>. Ignore the work register: what remains is supported on an arithmetic progression of spacing <em>r</em>.</p>
+<div style="padding:24px;border-top:1px solid rgba(244,241,234,.14);border-bottom:1px solid rgba(244,241,234,.14);font:300 17px/1.9 Spectral,serif;color:#c9a86c;text-align:center">|ψ⟩ ∝ Σ<sub>j</sub> |x₀ + jr⟩ &nbsp;⟶&nbsp; peaks at y ≈ kQ/r</div>
+<p style="margin:0;font:300 18px/1.85 Spectral,serif;color:rgba(240,236,226,.82);text-wrap:pretty">The inverse QFT does not find the period. It arranges for every y far from a multiple of Q/r to cancel, and lets what remains be read.</p>
+<p style="margin:0;font:300 18px/1.85 Spectral,serif;color:rgba(240,236,226,.62);text-wrap:pretty">Q = 256, r = 4, spacing 64. Sharp peaks, no leakage, continued fractions idle.</p>
+</article>
+<div style="width:600px;display:flex;align-items:center;gap:14px;padding-top:8px;border-top:1px solid rgba(244,241,234,.1)">
+<svg viewBox="0 0 120 46" width="120" height="46" style="opacity:.45;animation:drift 18s ease-in-out infinite"><path d="{{ curveDusk }}" fill="none" stroke="#c9a86c" stroke-width=".9"></path></svg>
+<span style="font:300 12.5px/1.7 Spectral,serif;font-style:italic;color:rgba(240,236,226,.36)">no margin, no counters. the page ends when the section does.</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="dv-opt" id="1e">
+<div class="dv-olabel"><a class="dv-oid" href="#1e">1e</a>Library — tablet</div>
+<div class="dv-card" style="width:834px">
+<div style="min-height:1040px;background:#f4f1ea;padding:38px 34px 44px;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;justify-content:space-between;align-items:center">
+<div style="font:400 17px/1 Spectral,serif;letter-spacing:.18em;color:#23241f">MATH IS FUN</div>
+<div style="display:flex;gap:10px"><span style="padding:7px 14px;border:1px solid rgba(35,36,31,.2);border-radius:4px;font:400 12px/1 'JetBrains Mono',monospace;color:#23241f">+ upload</span></div>
+</div>
+<div style="display:flex;flex-direction:column;gap:10px">
+<h1 style="margin:0;font:300 32px/1.1 Spectral,serif;color:#23241f">Library</h1>
+<p style="margin:0;font:300 15px/1.5 Spectral,serif;font-style:italic;color:rgba(35,36,31,.5)">Twenty-four papers. Six of them you have actually finished.</p>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap">
+<span style="padding:6px 13px;border-radius:20px;background:rgba(35,36,31,.07);font:300 12px/1 'JetBrains Mono',monospace;color:rgba(35,36,31,.62)">all</span>
+<span style="padding:6px 13px;border-radius:20px;border:1px solid rgba(35,36,31,.14);font:300 12px/1 'JetBrains Mono',monospace;color:rgba(35,36,31,.44)">reading</span>
+<span style="padding:6px 13px;border-radius:20px;border:1px solid rgba(35,36,31,.14);font:300 12px/1 'JetBrains Mono',monospace;color:rgba(35,36,31,.44)">annotated</span>
+<span style="padding:6px 13px;border-radius:20px;border:1px solid rgba(35,36,31,.14);font:300 12px/1 'JetBrains Mono',monospace;color:rgba(35,36,31,.44)">mine</span>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px">
+<div style="border:1px solid rgba(35,36,31,.13);border-radius:5px;background:#efebe1;padding:20px;display:flex;flex-direction:column;gap:14px;min-height:210px">
+<svg viewBox="0 0 120 52" width="120" height="52" style="opacity:.7"><path d="{{ curveCard }}" fill="none" stroke="#a8763e" stroke-width="1"></path></svg>
+<div style="font:400 17px/1.3 Spectral,serif;color:#23241f">Shor's Algorithm in Qiskit</div>
+<div style="font:300 11.5px/1.6 'JetBrains Mono',monospace;color:rgba(35,36,31,.45)">yours · 23 pp · N=15, r=4</div>
+<div style="margin-top:auto;display:flex;flex-direction:column;gap:6px"><div style="height:2px;background:rgba(35,36,31,.12)"><div style="width:76%;height:2px;background:#a8763e"></div></div><span style="font:300 10.5px 'JetBrains Mono',monospace;color:#a8763e">76% · 14 notes</span></div>
+</div>
+<div style="border:1px solid rgba(35,36,31,.13);border-radius:5px;padding:20px;display:flex;flex-direction:column;gap:14px;min-height:210px">
+<svg viewBox="0 0 120 52" width="120" height="52" style="opacity:.55"><path d="{{ curveCard }}" fill="none" stroke="#5c6f5a" stroke-width="1"></path></svg>
+<div style="font:400 17px/1.3 Spectral,serif;color:#23241f">The discrete logarithm on E(𝔽<sub>p</sub>)</div>
+<div style="font:300 11.5px/1.6 'JetBrains Mono',monospace;color:rgba(35,36,31,.45)">Galbraith &amp; Gaudry · 41 pp</div>
+<div style="margin-top:auto;display:flex;flex-direction:column;gap:6px"><div style="height:2px;background:rgba(35,36,31,.12)"><div style="width:34%;height:2px;background:#5c6f5a"></div></div><span style="font:300 10.5px 'JetBrains Mono',monospace;color:rgba(35,36,31,.42)">34% · 6 notes</span></div>
+</div>
+<div style="border:1px solid rgba(35,36,31,.13);border-radius:5px;padding:20px;display:flex;flex-direction:column;gap:14px;min-height:210px">
+<svg viewBox="0 0 120 52" width="120" height="52" style="opacity:.45"><path d="{{ curveCard }}" fill="none" stroke="#7a6a86" stroke-width="1"></path></svg>
+<div style="font:400 17px/1.3 Spectral,serif;color:#23241f">Quantum order finding for EC groups</div>
+<div style="font:300 11.5px/1.6 'JetBrains Mono',monospace;color:rgba(35,36,31,.45)">Proos–Zalka · 18 pp</div>
+<div style="margin-top:auto;display:flex;flex-direction:column;gap:6px"><div style="height:2px;background:rgba(35,36,31,.12)"><div style="width:100%;height:2px;background:rgba(35,36,31,.34)"></div></div><span style="font:300 10.5px 'JetBrains Mono',monospace;color:rgba(35,36,31,.42)">finished · 22 notes</span></div>
+</div>
+<div style="border:1px solid rgba(35,36,31,.13);border-radius:5px;padding:20px;display:flex;flex-direction:column;gap:14px;min-height:210px;opacity:.66">
+<svg viewBox="0 0 120 52" width="120" height="52" style="opacity:.35"><path d="{{ curveCard }}" fill="none" stroke="rgba(35,36,31,.5)" stroke-width="1"></path></svg>
+<div style="font:400 17px/1.3 Spectral,serif;color:#23241f">Pollard's ρ with distinguished points</div>
+<div style="font:300 11.5px/1.6 'JetBrains Mono',monospace;color:rgba(35,36,31,.45)">van Oorschot–Wiener · 28 pp</div>
+<div style="margin-top:auto;font:300 10.5px 'JetBrains Mono',monospace;color:rgba(35,36,31,.32)">not opened</div>
+</div>
+</div>
+<div style="margin-top:auto;padding-top:20px;border-top:1px solid rgba(35,36,31,.12);font:300 14px/1.7 Spectral,serif;font-style:italic;color:rgba(35,36,31,.46)">Nothing due. Read whatever the wind hands you.</div>
+</div>
+</div>
+</div>
+
+</div>
+<p class="dv-next">Try next: “build out the reader from <a class="dv-oid" href="#1c">1c</a> as a real prototype” · “more upload states — failed OCR, duplicate, handwritten scan” · “a concept map screen for the ECDLP thread”</p>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1400,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = { openPost: null, openPost4: null, checkpointOpen: false, pdfPages: [], theme: 'dark' };
+  themes = {
+    dark: { bg: '#000', ink: '#fff', body: 'rgba(255,255,255,.78)', sub: 'rgba(255,255,255,.5)', faint: 'rgba(255,255,255,.35)', border: 'rgba(255,255,255,.18)', hairline: 'rgba(255,255,255,.08)', road: 'rgba(255,255,255,.14)', accent: '#5AC8E8', panel: '#0A0F18', chipBg: 'rgba(255,255,255,.04)', disabled: 'rgba(255,255,255,.18)', disabledBg: 'rgba(255,255,255,.03)' },
+    light: { bg: '#F4F1EA', ink: '#23241f', body: 'rgba(35,36,31,.8)', sub: 'rgba(35,36,31,.55)', faint: 'rgba(35,36,31,.4)', border: 'rgba(35,36,31,.25)', hairline: 'rgba(35,36,31,.12)', road: 'rgba(35,36,31,.2)', accent: '#2E7D96', panel: '#EFEBE1', chipBg: 'rgba(35,36,31,.04)', disabled: 'rgba(35,36,31,.2)', disabledBg: 'rgba(35,36,31,.04)' }
+  };
+  componentDidMount() {
+    fetch('./pdf-text.json').then(r => r.json()).then(d => {
+      this.setState({ pdfPages: d.pages.map((t, i) => ({ n: i + 1, text: t.trim() })) });
+    }).catch(() => {});
+  }
+  async renderPdf() {
+    if (this.pdfStarted) return;
+    this.pdfStarted = true;
+    this.setState({ pdfLoading: true });
+    try {
+      const pdfjs = await import('https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.min.mjs');
+      pdfjs.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.10.38/build/pdf.worker.min.mjs';
+      const doc = await pdfjs.getDocument('./uploads/assets-1786279591086-oznq.pdf').promise;
+      for (let i = 1; i <= doc.numPages; i++) {
+        const page = await doc.getPage(i);
+        const vp = page.getViewport({ scale: 1.3 });
+        const canvas = document.createElement('canvas');
+        canvas.width = vp.width; canvas.height = vp.height;
+        await page.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+        const url = canvas.toDataURL('image/jpeg', 0.85);
+        this.setState(s => ({ pdfCanvases: [...(s.pdfCanvases || []), { n: i, url }], pdfDone: i }));
+      }
+    } catch (e) { console.warn('pdf render failed', e); }
+    this.setState({ pdfLoading: false });
+  }
+  shorts = ['IQFT cancellation', 'Factoring → order finding', 'The group law, slowly', 'Index calculus dies here', 'Pollard\u2019s \u03c1'];
+  tints = ['#5AC8E8', '#A98BFF', '#7FE0B2', '#E8B45A', '#8496AE'];
+  postList = [
+    { title: 'Where cancellation actually happens — the IQFT in Shor\u2019s algorithm', date: '8 Aug 2026', read: '9 min' },
+    { title: 'From factoring to order finding, in one page', date: '31 Jul 2026', read: '4 min' },
+    { title: 'The group law on E(\ud835\udd3d\u209a), drawn slowly', date: '24 Jul 2026', read: '7 min' },
+    { title: 'Why index calculus dies on elliptic curves', date: '15 Jul 2026', read: '6 min' },
+    { title: 'Pollard\u2019s \u03c1: a random walk that remembers nothing', date: '6 Jul 2026', read: '5 min' }
+  ];
+  // y² = x³ + ax + b, sampled into an SVG path (upper branch out, lower branch back)
+  curve(w, h, a, b, pad) {
+    const xs = [], ys = [];
+    const x0 = -2.2, x1 = 2.6, n = 160;
+    for (let i = 0; i <= n; i++) {
+      const x = x0 + (x1 - x0) * i / n;
+      const v = x * x * x + a * x + b;
+      if (v < 0) continue;
+      xs.push(x); ys.push(Math.sqrt(v));
+    }
+    if (!xs.length) return '';
+    const ymax = Math.max(...ys) || 1;
+    const px = x => pad + (x - x0) / (x1 - x0) * (w - 2 * pad);
+    const py = y => h / 2 - y / ymax * (h / 2 - pad);
+    let d = '';
+    for (let i = xs.length - 1; i >= 0; i--) d += (i === xs.length - 1 ? 'M' : 'L') + px(xs[i]).toFixed(1) + ' ' + py(-ys[i]).toFixed(1) + ' ';
+    for (let i = 1; i < xs.length; i++) d += 'L' + px(xs[i]).toFixed(1) + ' ' + py(ys[i]).toFixed(1) + ' ';
+    return d;
+  }
+  renderVals() {
+    const open = this.state.openPost;
+    return {
+      showIndex: open === null,
+      showPost: open !== null,
+      post: open === null ? this.postList[0] : this.postList[open],
+      posts: this.postList.map((p, i) => ({ ...p, open: () => this.setState({ openPost: i }) })),
+      goBack: () => this.setState({ openPost: null }),
+      showIndex4: this.state.openPost4 === null,
+      showPost4: this.state.openPost4 !== null,
+      post4: this.state.openPost4 === null ? this.postList[0] : this.postList[this.state.openPost4],
+      posts4: this.postList.map((p, i) => ({ ...p, short: this.shorts[i], tint: this.tints[i], open: () => this.setState({ openPost4: i }) })),
+      goBack4: () => this.setState({ openPost4: null }),
+      showCheckpoint: this.state.checkpointOpen,
+      ovOpacity: this.state.checkpointOpen ? '1' : '0',
+      ovPE: this.state.checkpointOpen ? 'auto' : 'none',
+      chLeft: this.state.checkpointOpen ? '140px' : '240px',
+      chTop: this.state.checkpointOpen ? '180px' : '300px',
+      chSize: this.state.checkpointOpen ? '400px' : '170px',
+      openCheckpoint: (e) => { if (e && e.stopPropagation) e.stopPropagation(); this.setState({ checkpointOpen: true, pdfView: false }); this.renderPdf(); },
+      stopClick: (e) => e.stopPropagation(),
+      hoverScale: this.state.stickerHover ? 'scale(1.1)' : 'scale(1)',
+      hoverOn: () => this.setState({ stickerHover: true }),
+      hoverOff: () => this.setState({ stickerHover: false }),
+      soonOpacity: this.state.comingSoon ? '1' : '0',
+      nextCheckpoint: (e) => {
+        e.stopPropagation();
+        this.setState({ comingSoon: true });
+        clearTimeout(this.soonTimer);
+        this.soonTimer = setTimeout(() => this.setState({ comingSoon: false }), 1800);
+      },
+      showSpecs: !this.state.pdfView,
+      showPdfView: !!this.state.pdfView,
+      openPdfView: () => { this.setState({ pdfView: true }); this.renderPdf(); },
+      closePdfView: () => this.setState({ pdfView: false }),
+      pdfPageImgs: (this.state.pdfCanvases || []).map(pc => React.createElement('img', { key: pc.n, src: pc.url, alt: 'PDF page ' + pc.n, style: { width: '100%', borderRadius: 4, background: '#fff', boxShadow: '0 2px 10px rgba(0,0,0,.35)' } })),
+      pdfLoading: !!this.state.pdfLoading,
+      pdfDone: this.state.pdfDone || 0,
+      closeCheckpoint: () => this.setState({ checkpointOpen: false }),
+      pdfPages: this.state.pdfPages,
+      t5: this.themes[this.state.theme],
+      themeIcon: this.state.theme === 'dark' ? '☾' : '☀',
+      themeLabel: this.state.theme === 'dark' ? 'DARK' : 'LIGHT',
+      toggleTheme: () => this.setState(s => ({ theme: s.theme === 'dark' ? 'light' : 'dark' })),
+      curveWide: this.curve(184, 96, -3, 3, 8),
+      curveWideB: this.curve(200, 108, -3, 3, 10),
+      curveSmall: this.curve(60, 42, -2, 2, 4),
+      curveCard: this.curve(120, 52, -3, 3, 6),
+      curveDusk: this.curve(120, 46, -2.5, 2.5, 5),
+      curveRow: this.curve(44, 30, -2, 2, 3)
+    };
+  }
+}
+</script>
+</body>
+</html>
