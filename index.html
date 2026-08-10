@@ -104,6 +104,9 @@
     opacity:0; pointer-events:none; transition:opacity .35s ease, background .4s;
   }
   .overlay.open{opacity:1; pointer-events:auto}
+  .overlay.pdf-full{grid-template-columns:1fr}
+  .overlay.pdf-full .overlay-left{display:none}
+  .overlay.pdf-full .overlay-close{display:flex}
   .overlay-left{position:relative; display:flex; align-items:center; justify-content:center}
   .overlay-left img{
     width:340px; max-width:70%; object-fit:contain; animation:bob 5s ease-in-out infinite;
@@ -141,14 +144,13 @@
   .pdf-view{display:none}
   .pdf-view.show{display:block}
   .specs-view.hide{display:none}
-  .pdf-head{display:flex; justify-content:space-between; align-items:center; margin:0 0 18px}
-  .pdf-head .lbl{font:400 11px/1 'JetBrains Mono',monospace; letter-spacing:.12em; color:var(--faint)}
-  .pdf-head .close{font:400 12px/1 'JetBrains Mono',monospace; color:var(--accent); cursor:pointer}
-  .pdf-head .close:hover{opacity:.7}
   .pdf-loading{display:none; font:400 11.5px/1 'JetBrains Mono',monospace; color:var(--faint); padding:8px 0 14px}
   .pdf-loading.show{display:block}
   .pdf-pages{display:flex; flex-direction:column; gap:14px}
   .pdf-pages img{width:100%; border-radius:4px; background:#fff; box-shadow:0 2px 10px rgba(0,0,0,.35); display:block}
+
+  .overlay.pdf-full .panel{padding:44px 32px 60px; align-items:center}
+  .overlay.pdf-full .pdf-view{width:100%; max-width:760px}
 
   .overlay-close{
     display:none; position:fixed; top:16px; right:16px; z-index:60;
@@ -210,7 +212,7 @@
     </div>
     <div class="rail-info">
       <span class="label">NEXT CHECKPOINT</span>
-      <span class="sub">upload a PDF to unlock</span>
+      <span class="sub">Quantum Elliptic Curve Cryptography Solver</span>
     </div>
   </div>
 
@@ -220,7 +222,7 @@
 <div class="overlay" id="overlay">
   <span class="overlay-close" id="overlayClose" title="close">✕</span>
   <div class="overlay-left">
-    <span class="back-link" id="backLink">← the road</span>
+    <span class="back-link" id="backLink">← Back</span>
     <img src="./assets/sticker-shor.png" alt="Shor checkpoint character">
     <div class="pager-wrap" id="pagerWrap">
       <span class="soon" id="soonLabel">coming soon…</span>
@@ -240,10 +242,6 @@
       </div>
     </div>
     <div class="pdf-view" id="pdfView">
-      <div class="pdf-head">
-        <span class="lbl">THE PDF · 23 PAGES</span>
-        <span class="close" id="closePdfView">← details</span>
-      </div>
       <div class="pdf-loading" id="pdfLoading">rendering PDF… <span id="pdfDone">0</span>/23</div>
       <div class="pdf-pages" id="pdfPages"></div>
     </div>
@@ -278,7 +276,6 @@
   const specsView = document.getElementById('specsView');
   const pdfView = document.getElementById('pdfView');
   const readPdfBtn = document.getElementById('readPdfBtn');
-  const closePdfView = document.getElementById('closePdfView');
   const pdfLoadingEl = document.getElementById('pdfLoading');
   const pdfDoneEl = document.getElementById('pdfDone');
   const pdfPagesEl = document.getElementById('pdfPages');
@@ -304,6 +301,9 @@
   }
   function closeCheckpoint() {
     overlay.classList.remove('open');
+    overlay.classList.remove('pdf-full');
+    specsView.classList.remove('hide');
+    pdfView.classList.remove('show');
   }
   checkpointCard.addEventListener('click', () => openCheckpoint(false));
   viewPdfTrigger.addEventListener('click', e => { e.stopPropagation(); openCheckpoint(true); });
@@ -321,18 +321,14 @@
     soonTimer = setTimeout(() => soonLabel.classList.remove('show'), 1800);
   });
 
-  // --- specs vs pdf view ---
+  // --- specs vs pdf view (pdf view takes over the full overlay) ---
   function openPdfView() {
     specsView.classList.add('hide');
     pdfView.classList.add('show');
+    overlay.classList.add('pdf-full');
     renderPdf();
   }
-  function closePdf() {
-    specsView.classList.remove('hide');
-    pdfView.classList.remove('show');
-  }
   readPdfBtn.addEventListener('click', openPdfView);
-  closePdfView.addEventListener('click', closePdf);
 
   // --- PDF rendering (pdf.js, client-side, idempotent) ---
   let pdfStarted = false;
